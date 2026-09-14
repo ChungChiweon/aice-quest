@@ -27,7 +27,7 @@
   </header>
 
   <!-- MAIN PORTAL CONTENT -->
-  <main class="flex-1 max-w-4xl w-full mx-auto p-6 flex flex-col items-center justify-center text-center space-y-8 my-8">
+  <main class="flex-1 max-w-4xl w-full mx-auto p-6 flex flex-col items-center justify-center text-center space-y-8 my-6">
     
     <div class="space-y-3 max-w-xl">
       <span class="inline-block px-3.5 py-1 bg-indigo-100 text-indigo-700 font-black rounded-full text-xs uppercase tracking-wider">
@@ -37,7 +37,7 @@
         소속 학교를 선택해 주세요
       </h1>
       <p class="text-slate-500 text-sm leading-relaxed">
-        선택하신 학교 전용 실습장으로 이동합니다. 1~50차시 문제 풀이 및 선생님 관제판이 학교별로 안전하게 분리되어 운영됩니다.
+        선택하신 학교 전용 실습장으로 이동합니다. 1~50차시 문제 풀이와 선생님 관제탑이 학교별로 안전하게 분리되어 운영됩니다.
       </p>
     </div>
 
@@ -45,10 +45,10 @@
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 w-full max-w-2xl text-left">
       
       <!-- SCHOOL A: HEUNG -->
-      <a href="./heung/" class="group bg-white p-7 rounded-3xl border-2 border-slate-200 hover:border-indigo-500 hover:shadow-xl transition-all duration-200 flex flex-col justify-between space-y-6">
+      <div class="bg-white p-7 rounded-3xl border-2 border-slate-200 hover:border-indigo-500 hover:shadow-xl transition-all duration-200 flex flex-col justify-between space-y-6">
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl">
               <i class="fa-solid fa-school"></i>
             </div>
             <span class="text-[11px] font-black px-2.5 py-1 rounded-full bg-indigo-100 text-indigo-700 uppercase tracking-wide">
@@ -56,7 +56,7 @@
             </span>
           </div>
           <div>
-            <h2 class="text-xl font-black text-slate-900 group-hover:text-indigo-600 transition">
+            <h2 class="text-xl font-black text-slate-900">
               A학교 실습장
             </h2>
             <div class="text-xs text-indigo-600 font-mono font-bold mt-0.5">/heung</div>
@@ -65,46 +65,62 @@
             </p>
           </div>
         </div>
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
-          <span>A학교 실습실 입장하기</span>
-          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+
+        <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
+          <a href="./heung/" class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition shadow-md shadow-indigo-100">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>학생 실습실 입장하기</span>
+            <i class="fa-solid fa-arrow-right ml-1"></i>
+          </a>
+          <a href="./heung/teacher.html" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-chalkboard-user text-indigo-600"></i>
+            <span>교사용 관제탑 (선생님 전용)</span>
+          </a>
         </div>
-      </a>
+      </div>
 
       <!-- SCHOOL B: MARINE -->
-      <a href="./marine/" class="group bg-white p-7 rounded-3xl border-2 border-slate-200 hover:border-cyan-500 hover:shadow-xl transition-all duration-200 flex flex-col justify-between space-y-6">
+      <div class="bg-white p-7 rounded-3xl border-2 border-slate-200 hover:border-teal-500 hover:shadow-xl transition-all duration-200 flex flex-col justify-between space-y-6">
         <div class="space-y-4">
           <div class="flex items-center justify-between">
-            <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl group-hover:scale-110 transition">
+            <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-2xl">
               <i class="fa-solid fa-anchor"></i>
             </div>
-            <span class="text-[11px] font-black px-2.5 py-1 rounded-full bg-cyan-100 text-cyan-700 uppercase tracking-wide">
+            <span class="text-[11px] font-black px-2.5 py-1 rounded-full bg-teal-100 text-teal-700 uppercase tracking-wide">
               B학교 전용
             </span>
           </div>
           <div>
-            <h2 class="text-xl font-black text-slate-900 group-hover:text-cyan-600 transition">
+            <h2 class="text-xl font-black text-slate-900">
               B학교 실습장
             </h2>
-            <div class="text-xs text-cyan-600 font-mono font-bold mt-0.5">/marine</div>
+            <div class="text-xs text-teal-600 font-mono font-bold mt-0.5">/marine</div>
             <p class="text-xs text-slate-500 mt-2 leading-relaxed">
               B학교 학생 전용 1~50차시 파이썬·판다스·머신러닝·딥러닝 실기 코스 및 수료증 발급
             </p>
           </div>
         </div>
-        <div class="pt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-cyan-600">
-          <span>B학교 실습실 입장하기</span>
-          <i class="fa-solid fa-arrow-right group-hover:translate-x-1 transition"></i>
+
+        <div class="pt-4 border-t border-slate-100 flex flex-col space-y-2">
+          <a href="./marine/" class="w-full py-3 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-bold text-xs flex items-center justify-center space-x-2 transition shadow-md shadow-teal-100">
+            <i class="fa-solid fa-graduation-cap"></i>
+            <span>학생 실습실 입장하기</span>
+            <i class="fa-solid fa-arrow-right ml-1"></i>
+          </a>
+          <a href="./marine/teacher.html" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 hover:text-slate-900 rounded-xl font-bold text-xs flex items-center justify-center space-x-1.5 transition">
+            <i class="fa-solid fa-chalkboard-user text-teal-600"></i>
+            <span>교사용 관제탑 (선생님 전용)</span>
+          </a>
         </div>
-      </a>
+      </div>
 
     </div>
 
     <!-- TEACHER GUIDANCE -->
     <div class="bg-white/80 backdrop-blur-sm p-4 rounded-2xl border border-slate-200 max-w-2xl w-full text-xs text-slate-500 flex items-center space-x-3">
       <i class="fa-solid fa-circle-info text-indigo-500 text-base"></i>
-      <span class="text-left">
-        각 학교 실습장 우측 상단의 <b>[선생님 실시간 관제판]</b>을 누르시면, 해당 학교 학생들의 실시간 문제 해결 및 통과 상태만 별도로 모니터링하실 수 있습니다.
+      <span class="text-left leading-relaxed">
+        학생은 <b>[학생 실습실 입장하기]</b>를 눌러 본인 컴퓨터 번호와 이름으로 문제를 풀고, 선생님은 <b>[교사용 관제탑]</b>을 통해 학생들의 실시간 문제 해결 및 통과 상태만 별도로 모니터링하실 수 있습니다.
       </span>
     </div>
 

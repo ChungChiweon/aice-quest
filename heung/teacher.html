@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AICE 실시간 진도 관제탑 - A학교 (교사용)</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
+    .font-mono { font-family: 'JetBrains Mono', monospace; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+  </style>
+</head>
+<body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col justify-between">
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="bg-slate-900 text-white sticky top-0 z-50 shadow-md">
+    <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
+      <div class="flex items-center space-x-3">
+        <a href="../" class="flex items-center space-x-1.5 text-xs font-bold text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700 px-3 py-1.5 rounded-lg transition" title="학교 선택 포털로 이동">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>포털</span>
+        </a>
+        <div class="flex items-center space-x-2">
+          <span class="bg-indigo-600 text-white font-black px-2.5 py-1 rounded-lg text-sm tracking-wider">AICE</span>
+          <span class="font-extrabold text-base sm:text-lg tracking-tight">A학교 실시간 관제탑</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-md bg-amber-400 text-slate-950 uppercase">선생님 전용</span>
+        </div>
+      </div>
+      
+      <div class="flex items-center space-x-3">
+        <span class="hidden sm:flex items-center text-xs font-bold text-slate-300 bg-slate-800 px-3 py-1.5 rounded-full border border-slate-700">
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse mr-2"></span>
+          <span>실시간 감시 중</span>
+        </span>
+        <a href="./index.html" class="text-xs font-bold px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded-lg transition flex items-center space-x-1 border border-slate-700">
+          <i class="fa-solid fa-chalkboard-user"></i>
+          <span>학생 실습실 열기</span>
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN MONITORING WORKSPACE -->
+  <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6 space-y-6">
+    
+    <!-- STATS OVERVIEW BANNER -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+      
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase">현재 실시간 접속자</span>
+          <div class="text-2xl font-black text-slate-900 mt-1" id="stat-active-count">0명</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-users"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase">전 과정 완주 (50/50)</span>
+          <div class="text-2xl font-black text-emerald-600 mt-1" id="stat-completed-count">0명</div>
+        </div>
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-xl">
+          <i class="fa-solid fa-award"></i>
+        </div>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase">학생 실습실 주소</span>
+          <div class="text-xs font-bold font-mono text-indigo-600 mt-1 truncate max-w-[180px]" id="stat-student-url">...</div>
+        </div>
+        <button onclick="copyStudentUrl()" class="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold transition flex items-center space-x-1" title="학생 접속 링크 복사">
+          <i class="fa-solid fa-copy"></i>
+          <span id="copy-btn-text">복사</span>
+        </button>
+      </div>
+
+      <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex items-center justify-between">
+        <div>
+          <span class="text-xs font-bold text-slate-400 uppercase">동기화 상태</span>
+          <div class="text-xs font-bold text-slate-600 mt-1" id="stat-sync-time">동기화 대기</div>
+        </div>
+        <div class="flex space-x-1">
+          <button onclick="fetchRealStudents()" class="p-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs transition" title="수동 새로고침">
+            <i class="fa-solid fa-arrows-rotate"></i>
+          </button>
+          <button onclick="resetClassroomProgress()" class="p-2.5 bg-red-50 hover:bg-red-100 text-red-600 rounded-lg text-xs transition" title="진도 기록 초기화">
+            <i class="fa-solid fa-trash-can"></i>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- REAL-TIME CLASSROOM GRID -->
+    <section class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm space-y-4">
+      <div class="flex flex-wrap items-center justify-between gap-3 border-b border-slate-100 pb-4">
+        <div>
+          <h2 class="text-lg font-black text-slate-900">A학교 실시간 학생별 진행 현황판</h2>
+          <p class="text-xs text-slate-500 mt-0.5">학생이 코드를 조립(S1), 파라미터를 조작(S2), 연산을 실행(S3)할 때마다 실시간 업데이트됩니다.</p>
+        </div>
+        <div class="flex items-center space-x-4 text-xs font-semibold text-slate-500">
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span>완료</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span>진행 중</span>
+          <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 mr-1.5"></span>대기</span>
+        </div>
+      </div>
+
+      <!-- ZERO MOCK DATA: EMPTY STATE (DEFAULT UNTIL REAL STUDENTS JOIN) -->
+      <div id="classroom-empty-state" class="py-16 text-center space-y-3">
+        <div class="w-16 h-16 bg-slate-100 text-slate-400 rounded-2xl flex items-center justify-center mx-auto text-2xl">
+          <i class="fa-solid fa-user-clock"></i>
+        </div>
+        <h3 class="text-base font-bold text-slate-800">현재 접속 중인 학생이 없습니다</h3>
+        <p class="text-xs text-slate-400 max-w-md mx-auto leading-relaxed">
+          학생들이 실습장 주소로 접속하여 본인 이름이나 좌석 번호를 입력하고 문제를 풀면, 실시간으로 여기에 학생 카드와 진도가 나타납니다.
+        </p>
+        <div class="pt-2">
+          <button onclick="copyStudentUrl()" class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-bold transition shadow-sm">
+            <i class="fa-solid fa-link mr-1"></i> 학생 실습실 주소 복사하기
+          </button>
+        </div>
+      </div>
+
+      <!-- DYNAMIC STUDENT CARDS CONTAINER -->
+      <div id="classroom-grid" class="hidden grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+        <!-- JS dynamically populates ONLY real students -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="text-center py-6 text-xs text-slate-400 border-t border-slate-200 bg-white">
+    AICE Associate A학교 실시간 관제 시스템 · 교사용 모니터링 콘솔
+  </footer>
+
+  <script>
+    const SCHOOL_ID = "heung";
+    const SCHOOL_NAME = "A학교";
+    const STORAGE_PREFIX = "aice_" + SCHOOL_ID + "_";
+
+    let pollingTimer = null;
+
+    window.addEventListener("DOMContentLoaded", () => {
+      // Set student URL display
+      const studentUrl = window.location.origin + window.location.pathname.replace("teacher.html", "");
+      document.getElementById("stat-student-url").innerText = studentUrl;
+      document.getElementById("stat-student-url").title = studentUrl;
+
+      fetchRealStudents();
+      pollingTimer = setInterval(fetchRealStudents, 2500);
+    });
+
+    async function fetchRealStudents() {
+      let map = {};
+      let connectedServer = false;
+
+      // 1. Try fetching from LAN server
+      try {
+        const res = await fetch("/api/progress?school=" + SCHOOL_ID);
+        if (res.ok) {
+          const remoteData = await res.json();
+          if (remoteData && typeof remoteData === "object") {
+            Object.keys(remoteData).forEach(k => {
+              if (remoteData[k] && remoteData[k].studentName) {
+                map[k] = remoteData[k];
+                connectedServer = true;
+              }
+            });
+          }
+        }
+      } catch (e) {}
+
+      // 2. Read REAL students from localStorage (matching this school only)
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_PREFIX + "progress_")) {
+          const name = key.replace(STORAGE_PREFIX + "progress_", "");
+          if (name && !map[name]) {
+            try {
+              const prog = JSON.parse(localStorage.getItem(key) || "{}");
+              const cList = Object.keys(prog).filter(k => prog[k] === true).map(Number);
+              map[name] = {
+                studentName: name,
+                questId: cList.length > 0 ? cList[cList.length - 1] : 0,
+                questTitle: cList.length > 0 ? `${cList[cList.length - 1]}차시 완료` : "실습 진행 중",
+                stepStatus: { s1: true, s2: true, s3: true },
+                completedCount: cList.length,
+                completedQuests: cList,
+                lastActive: "로컬 기록"
+              };
+            } catch (e) {}
+          }
+        }
+      }
+
+      // Check current student if logged in
+      const currentStudent = localStorage.getItem(STORAGE_PREFIX + "student_name");
+      if (currentStudent && !map[currentStudent]) {
+        try {
+          const prog = JSON.parse(localStorage.getItem(STORAGE_PREFIX + "progress_" + currentStudent) || "{}");
+          const cList = Object.keys(prog).filter(k => prog[k] === true).map(Number);
+          map[currentStudent] = {
+            studentName: currentStudent,
+            questId: 0,
+            questTitle: "실습 중",
+            stepStatus: { s1: false, s2: false, s3: false },
+            completedCount: cList.length,
+            completedQuests: cList,
+            lastActive: "방금"
+          };
+        } catch (e) {}
+      }
+
+      // 3. Render real students ONLY (ZERO mock data!)
+      renderClassroom(map, connectedServer);
+    }
+
+    function renderClassroom(studentsMap, connectedServer) {
+      const emptyState = document.getElementById("classroom-empty-state");
+      const grid = document.getElementById("classroom-grid");
+      const activeCountEl = document.getElementById("stat-active-count");
+      const completedCountEl = document.getElementById("stat-completed-count");
+      const syncTimeEl = document.getElementById("stat-sync-time");
+
+      const studentKeys = Object.keys(studentsMap);
+      activeCountEl.innerText = studentKeys.length + "명";
+
+      const allCleared = studentKeys.filter(k => (studentsMap[k].completedCount || 0) >= 50).length;
+      completedCountEl.innerText = allCleared + "명";
+
+      syncTimeEl.innerText = (connectedServer ? "서버 연동 " : "실시간 ") + new Date().toLocaleTimeString('ko-KR');
+
+      if (studentKeys.length === 0) {
+        emptyState.classList.remove("hidden");
+        grid.classList.add("hidden");
+        grid.innerHTML = "";
+        return;
+      }
+
+      emptyState.classList.add("hidden");
+      grid.classList.remove("hidden");
+      grid.innerHTML = "";
+
+      // Sort by completion count descending
+      studentKeys.sort((a, b) => {
+        const diff = (studentsMap[b].completedCount || 0) - (studentsMap[a].completedCount || 0);
+        if (diff !== 0) return diff;
+        return a.localeCompare(b);
+      });
+
+      studentKeys.forEach(name => {
+        const st = studentsMap[name];
+        const isDoneAll = (st.completedCount || 0) >= 50;
+        const currentQuestText = st.questTitle || (st.questId > 0 ? `${st.questId}차시` : "로비 대기");
+        
+        let s1Done = st.stepStatus && st.stepStatus.s1;
+        let s2Done = st.stepStatus && st.stepStatus.s2;
+        let s3Done = st.stepStatus && st.stepStatus.s3;
+
+        let badgeColor = isDoneAll ? "bg-emerald-500" : (st.questId > 0 ? "bg-amber-400" : "bg-slate-300");
+
+        const card = document.createElement("div");
+        card.className = `p-4 rounded-2xl border transition shadow-sm flex flex-col justify-between ${
+          isDoneAll ? "bg-emerald-50/70 border-emerald-300" : "bg-white border-slate-200 hover:shadow-md"
+        }`;
+
+        card.innerHTML = `
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <span class="font-extrabold text-xs text-slate-800 tracking-tight flex items-center">
+                <i class="fa-solid fa-user-graduate mr-1.5 text-indigo-500"></i>${st.studentName}
+              </span>
+              <span class="flex items-center space-x-1.5">
+                <span class="w-2.5 h-2.5 rounded-full ${badgeColor}"></span>
+                <span class="text-xs font-bold ${isDoneAll ? 'text-emerald-700' : 'text-slate-600'} font-mono">${st.completedCount || 0} / 50</span>
+              </span>
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="w-full bg-slate-100 h-1.5 rounded-full overflow-hidden mb-3">
+              <div class="${isDoneAll ? 'bg-emerald-500' : 'bg-indigo-600'} h-full transition-all duration-300" style="width: ${Math.min(100, ((st.completedCount || 0) / 50) * 100)}%"></div>
+            </div>
+
+            <div class="text-[11px] text-slate-600 mb-2 truncate" title="${currentQuestText}">
+              <span class="text-slate-400">진행:</span> <b class="text-indigo-600">${currentQuestText}</b>
+            </div>
+
+            <div class="grid grid-cols-3 gap-1 text-center font-mono text-[9px] font-bold">
+              <span class="py-0.5 rounded ${s1Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S1 조립</span>
+              <span class="py-0.5 rounded ${s2Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S2 튜닝</span>
+              <span class="py-0.5 rounded ${s3Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S3 실행</span>
+            </div>
+          </div>
+
+          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <span>마지막 활동</span>
+            <span>${st.lastActive || "방금"}</span>
+          </div>
+        `;
+
+        grid.appendChild(card);
+      });
+    }
+
+    async function resetClassroomProgress() {
+      if (!confirm("정말로 모든 진도 기록을 초기화하시겠습니까?")) return;
+      try {
+        await fetch("/api/progress?school=" + SCHOOL_ID, { method: "DELETE" });
+      } catch (e) {}
+
+      // Clear local storage for this school
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(STORAGE_PREFIX)) {
+          localStorage.removeItem(k);
+        }
+      }
+      fetchRealStudents();
+      alert("진도 기록이 초기화되었습니다.");
+    }
+
+    function copyStudentUrl() {
+      const studentUrl = window.location.origin + window.location.pathname.replace("teacher.html", "");
+      navigator.clipboard.writeText(studentUrl).then(() => {
+        const btn = document.getElementById("copy-btn-text");
+        if (btn) {
+          btn.innerText = "복사완료!";
+          setTimeout(() => { btn.innerText = "복사"; }, 2000);
+        }
+        alert("학생 실습실 접속 주소가 복사되었습니다:\n" + studentUrl);
+      });
+    }
+  </script>
+</body>
+</html>

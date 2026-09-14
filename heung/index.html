@@ -23,7 +23,7 @@
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
 
-  <!-- TOP NAVIGATION BAR -->
+  <!-- TOP NAVIGATION BAR (STUDENT VIEW) -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
       <div class="flex items-center space-x-3">
@@ -34,26 +34,19 @@
         <div class="flex items-center space-x-2 cursor-pointer" onclick="showLobby()">
           <span class="bg-indigo-600 text-white font-black px-2.5 py-1 rounded-lg text-sm tracking-wider">AICE</span>
           <span class="font-bold text-base sm:text-lg text-slate-900 tracking-tight">AI 실기 퀘스트 (1~50차시)</span>
-          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 hidden sm:inline-block">A학교</span>
+          <span class="text-xs font-bold px-2.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 hidden sm:inline-block">A학교</span>
         </div>
       </div>
       
       <div class="flex items-center space-x-2 sm:space-x-3">
         <div id="user-display" class="hidden items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-          <i class="fa-solid fa-trophy text-amber-500 text-xs"></i>
+          <i class="fa-solid fa-user-graduate text-slate-600 text-xs"></i>
           <span id="current-user-name" class="font-bold text-xs sm:text-sm text-slate-700"></span>
           <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold font-mono" id="user-progress-badge">진도: 0 / 50</span>
           <button onclick="switchUser()" title="학생 변경" class="ml-1 text-slate-400 hover:text-slate-600 text-xs">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
-        
-        <button onclick="toggleTeacherDashboard()" class="text-xs font-semibold px-3 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center space-x-1.5 shadow-sm">
-          <i class="fa-solid fa-chalkboard-user"></i>
-          <span class="hidden sm:inline">선생님 실시간 관제판</span>
-          <span class="sm:hidden">관제판</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>
-        </button>
       </div>
     </div>
   </header>
@@ -274,55 +267,6 @@
       </div>
     </section>
 
-    <!-- VIEW 4: TEACHER REAL-TIME MONITORING DASHBOARD (Modal) -->
-    <div id="teacher-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
-        <div class="p-4 bg-slate-900 text-white flex items-center justify-between">
-          <div class="flex items-center space-x-3">
-            <i class="fa-solid fa-chalkboard-user text-indigo-400 text-lg"></i>
-            <div>
-              <h2 class="font-extrabold text-sm">선생님 전용 1~50차시 실시간 진도 관제판 (A학교)</h2>
-              <p class="text-[11px] text-slate-400">학생들의 3단계 미션 완료 상태 및 50차시 완주율이 실시간으로 집계됩니다.</p>
-            </div>
-          </div>
-          <button onclick="toggleTeacherDashboard()" class="text-slate-400 hover:text-white text-lg">
-            <i class="fa-solid fa-xmark"></i>
-          </button>
-        </div>
-
-        <div class="p-5 overflow-y-auto custom-scrollbar space-y-4">
-          <div class="flex flex-wrap items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs gap-2">
-            <div class="flex items-center space-x-3">
-              <span class="font-bold text-slate-700">접속 학생: <b id="teacher-student-count" class="text-indigo-600">0</b>명</span>
-              <span id="last-sync-time" class="text-slate-400 font-mono text-[11px]">최근 동기화: 대기</span>
-            </div>
-            <div class="flex items-center space-x-4 text-[11px]">
-              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span>완료</span>
-              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span>진행 중</span>
-              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 mr-1.5"></span>대기</span>
-            </div>
-            <div class="flex items-center space-x-2">
-              <button onclick="refreshTeacherGrid()" class="text-indigo-600 font-bold hover:underline">
-                <i class="fa-solid fa-arrows-rotate mr-1"></i> 새로고침
-              </button>
-              <button onclick="resetAllProgress()" class="text-red-500 font-bold hover:underline ml-2">
-                <i class="fa-solid fa-trash-can mr-1"></i> 기록 초기화
-              </button>
-            </div>
-          </div>
-
-          <div id="teacher-empty-state" class="hidden text-center py-12 text-slate-400">
-            <i class="fa-solid fa-users-slash text-3xl mb-2"></i>
-            <p class="text-xs">현재 접속 중인 학생 데이터가 없습니다.</p>
-          </div>
-
-          <div id="teacher-students-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
-            <!-- Dynamically populated student cards -->
-          </div>
-        </div>
-      </div>
-    </div>
-
     <!-- VIEW 5: PRINTABLE A4 SUMMARY REPORT & CERTIFICATE -->
     <div id="print-area" class="hidden p-8 bg-white text-slate-900">
       <div class="border-b-4 border-slate-900 pb-4 mb-6">
@@ -363,6 +307,17 @@
     </div>
 
   </main>
+
+  <!-- FOOTER -->
+  <footer class="py-6 text-center text-xs text-slate-400 border-t border-slate-200 bg-white">
+    <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+      <span>A학교 AICE Associate 1~50차시 실습장</span>
+      <a href="./teacher.html" class="text-slate-400 hover:text-slate-600 transition flex items-center space-x-1" title="교사용 전용 관제탑">
+        <i class="fa-solid fa-lock text-[10px]"></i>
+        <span>교사용 관제탑</span>
+      </a>
+    </div>
+  </footer>
 
   <script>
     /* =========================================================================
@@ -1204,7 +1159,6 @@
     let activeChartInstance = null;
     let stepStatus = { s1: false, s2: false, s3: false };
     let currentFilter = "all";
-    let teacherPollingTimer = null;
 
     window.addEventListener("DOMContentLoaded", () => {
       if (currentStudent) {
@@ -3025,7 +2979,7 @@ if (activeQuest.id === 46) {
     }
 
     /* =========================================================================
-       REAL-TIME TEACHER DASHBOARD & PROGRESS SYNC
+       BACKGROUND PROGRESS REPORTING (STUDENT -> SERVER / STORAGE)
        ========================================================================= */
     async function reportProgressToServer() {
       if (!currentStudent) return;
@@ -3048,197 +3002,6 @@ if (activeQuest.id === 46) {
           body: JSON.stringify(payload)
         });
       } catch (e) {}
-    }
-
-    function toggleTeacherDashboard() {
-      const modal = document.getElementById("teacher-modal");
-      if (modal.classList.contains("hidden")) {
-        modal.classList.remove("hidden");
-        refreshTeacherGrid();
-        if (!teacherPollingTimer) {
-          teacherPollingTimer = setInterval(refreshTeacherGrid, 3000);
-        }
-      } else {
-        modal.classList.add("hidden");
-        if (teacherPollingTimer) {
-          clearInterval(teacherPollingTimer);
-          teacherPollingTimer = null;
-        }
-      }
-    }
-
-    async function refreshTeacherGrid() {
-      const container = document.getElementById("teacher-students-grid");
-      const emptyState = document.getElementById("teacher-empty-state");
-      const countEl = document.getElementById("teacher-student-count");
-      const syncEl = document.getElementById("last-sync-time");
-
-      let studentsMap = {};
-      let connectedServer = false;
-
-      try {
-        const res = await fetch("/api/progress?school=" + SCHOOL_ID);
-        if (res.ok) {
-          studentsMap = await res.json();
-          connectedServer = true;
-        }
-      } catch (e) {}
-
-      // Fallback: If no LAN server response, harvest local students from localStorage + simulation
-      if (!connectedServer || Object.keys(studentsMap).length === 0) {
-        studentsMap = harvestLocalStudents();
-      }
-
-      const studentKeys = Object.keys(studentsMap);
-      countEl.innerText = studentKeys.length;
-      syncEl.innerText = (connectedServer ? "서버 연동 " : "로컬 관제 ") + new Date().toLocaleTimeString('ko-KR');
-
-      if (studentKeys.length === 0) {
-        container.innerHTML = "";
-        emptyState.classList.remove("hidden");
-        return;
-      }
-
-      emptyState.classList.add("hidden");
-      container.innerHTML = "";
-
-      studentKeys.sort((a, b) => {
-        const diff = (studentsMap[b].completedCount || 0) - (studentsMap[a].completedCount || 0);
-        if (diff !== 0) return diff;
-        return a.localeCompare(b);
-      });
-
-      studentKeys.forEach(name => {
-        const st = studentsMap[name];
-        const isDoneAll = (st.completedCount || 0) >= 50;
-        const currentQuestText = st.questTitle || (st.questId > 0 ? `${st.questId}차시` : "로비 대기");
-        
-        let s1Done = st.stepStatus && st.stepStatus.s1;
-        let s2Done = st.stepStatus && st.stepStatus.s2;
-        let s3Done = st.stepStatus && st.stepStatus.s3;
-
-        let badgeColor = isDoneAll ? "bg-emerald-500" : (st.questId > 0 ? "bg-amber-400" : "bg-slate-300");
-
-        const card = document.createElement("div");
-        card.className = `p-3 rounded-2xl border transition shadow-sm flex flex-col justify-between ${
-          isDoneAll ? "bg-emerald-50/70 border-emerald-300" : "bg-white border-slate-200"
-        }`;
-
-        card.innerHTML = `
-          <div>
-            <div class="flex items-center justify-between mb-1.5">
-              <span class="font-black text-xs text-slate-800 tracking-tight flex items-center">
-                <i class="fa-solid fa-user-graduate mr-1.5 text-indigo-500"></i>${st.studentName}
-              </span>
-              <span class="flex items-center space-x-1">
-                <span class="w-2 h-2 rounded-full ${badgeColor}"></span>
-                <span class="text-[10px] font-bold ${isDoneAll ? 'text-emerald-700' : 'text-slate-500'} font-mono">${st.completedCount || 0}/50</span>
-              </span>
-            </div>
-
-            <div class="text-[11px] text-slate-600 mb-2 truncate" title="${currentQuestText}">
-              <span class="text-slate-400">진행:</span> <b class="text-indigo-600">${currentQuestText}</b>
-            </div>
-
-            <div class="grid grid-cols-3 gap-1 text-center font-mono text-[9px] font-bold">
-              <span class="py-0.5 rounded ${s1Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S1</span>
-              <span class="py-0.5 rounded ${s2Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S2</span>
-              <span class="py-0.5 rounded ${s3Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S3</span>
-            </div>
-          </div>
-
-          <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-            <span>마지막 활동</span>
-            <span>${st.lastActive || "방금"}</span>
-          </div>
-        `;
-
-        container.appendChild(card);
-      });
-    }
-
-    function harvestLocalStudents() {
-      let map = {};
-      if (currentStudent) {
-        const completedList = Object.keys(studentProgress).filter(k => studentProgress[k] === true).map(Number);
-        map[currentStudent] = {
-          studentName: currentStudent,
-          questId: activeQuest ? activeQuest.id : 0,
-          questTitle: activeQuest ? `${activeQuest.id}차시: ${activeQuest.title}` : "로비 대기",
-          stepStatus: stepStatus,
-          completedCount: completedList.length,
-          completedQuests: completedList,
-          lastActive: "방금"
-        };
-      }
-
-      // Check other students in localStorage
-      for (let i = 0; i < localStorage.length; i++) {
-        const key = localStorage.key(i);
-        if (key && key.startsWith(STORAGE_PREFIX + "progress_")) {
-          const name = key.replace(STORAGE_PREFIX + "progress_", "");
-          if (name && !map[name]) {
-            try {
-              const prog = JSON.parse(localStorage.getItem(key) || "{}");
-              const cList = Object.keys(prog).filter(k => prog[k] === true).map(Number);
-              map[name] = {
-                studentName: name,
-                questId: 0,
-                questTitle: "완료 목록 확인",
-                stepStatus: { s1: true, s2: true, s3: true },
-                completedCount: cList.length,
-                completedQuests: cList,
-                lastActive: "이전 세션"
-              };
-            } catch (e) {}
-          }
-        }
-      }
-
-      // If fewer than 4 students, add mock class peers for preview demonstration
-      if (Object.keys(map).length < 4) {
-        const samplePeers = [
-          { name: "1반 03번 김민준", count: 18, qId: 19, qTitle: "19차시: iloc vs loc" },
-          { name: "1반 07번 박서연", count: 32, qId: 33, qTitle: "33차시: train_test_split" },
-          { name: "1반 12번 최도윤", count: 50, qId: 50, qTitle: "50차시: 전 과정 완주" },
-          { name: "1반 18번 정하은", count: 8, qId: 9, qTitle: "9차시: split & join" }
-        ];
-        samplePeers.forEach(p => {
-          if (!map[p.name]) {
-            map[p.name] = {
-              studentName: p.name,
-              questId: p.qId,
-              questTitle: p.qTitle,
-              stepStatus: { s1: true, s2: true, s3: p.count > 0 },
-              completedCount: p.count,
-              completedQuests: [],
-              lastActive: "조금 전"
-            };
-          }
-        });
-      }
-
-      return map;
-    }
-
-    async function resetAllProgress() {
-      if (!confirm("정말로 모든 진도 기록을 초기화하시겠습니까?")) return;
-      try {
-        await fetch("/api/progress?school=" + SCHOOL_ID, { method: "DELETE" });
-      } catch (e) {}
-
-      // Clear local storage for this school
-      for (let i = localStorage.length - 1; i >= 0; i--) {
-        const k = localStorage.key(i);
-        if (k && k.startsWith(STORAGE_PREFIX)) {
-          localStorage.removeItem(k);
-        }
-      }
-      studentProgress = {};
-      refreshTeacherGrid();
-      updateProgressHeader();
-      renderQuestGrid();
-      alert("진도 기록이 초기화되었습니다.");
     }
 
     /* =========================================================================
