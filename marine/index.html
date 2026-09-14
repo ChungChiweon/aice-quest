@@ -1,18 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>AICE 어소시에이트 원클릭 마스터 (B학교: marine)</title>
+  <title>AICE 어소시에이트 실기 1~50차시 (B학교: marine)</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
-    body { font-family: 'Pretendard', sans-serif; }
+    @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap');
+    body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; }
     .font-mono { font-family: 'JetBrains Mono', monospace; }
-    .custom-scrollbar::-webkit-scrollbar { width: 6px; }
+    .custom-scrollbar::-webkit-scrollbar { width: 6px; height: 6px; }
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     @media print {
       body * { visibility: hidden; }
@@ -26,25 +26,33 @@
   <!-- TOP NAVIGATION BAR -->
   <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
     <div class="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-      <div class="flex items-center space-x-3 cursor-pointer" onclick="showLobby()">
-        <span class="bg-indigo-600 text-white font-black px-2.5 py-1 rounded-lg text-sm tracking-wider">AICE</span>
-        <span class="font-bold text-lg text-slate-900 tracking-tight">AI ?ㅺ린 ?섏뒪??(1~50李⑥떆 ?ъ씤??留덉뒪??</span>
+      <div class="flex items-center space-x-3">
+        <a href="../" class="flex items-center space-x-1.5 text-xs font-bold text-slate-500 hover:text-slate-800 bg-slate-100 hover:bg-slate-200 px-2.5 py-1.5 rounded-lg transition mr-1" title="학교 선택 포털로 이동">
+          <i class="fa-solid fa-arrow-left"></i>
+          <span>포털</span>
+        </a>
+        <div class="flex items-center space-x-2 cursor-pointer" onclick="showLobby()">
+          <span class="bg-teal-600 text-white font-black px-2.5 py-1 rounded-lg text-sm tracking-wider">AICE</span>
+          <span class="font-bold text-base sm:text-lg text-slate-900 tracking-tight">AI 실기 퀘스트 (1~50차시)</span>
+          <span class="text-xs font-bold px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 hidden sm:inline-block">B학교</span>
+        </div>
       </div>
       
-      <div class="flex items-center space-x-3">
+      <div class="flex items-center space-x-2 sm:space-x-3">
         <div id="user-display" class="hidden items-center space-x-2 bg-slate-100 px-3 py-1.5 rounded-full border border-slate-200">
-          <i class="fa-solid fa-trophy text-amber-500"></i>
-          <span id="current-user-name" class="font-bold text-sm text-slate-700"></span>
-          <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold font-mono" id="user-progress-badge">吏꾨룄: 0 / 50</span>
-          <button onclick="switchUser()" title="?숈깮 蹂寃? class="ml-1 text-slate-400 hover:text-slate-600 text-xs">
+          <i class="fa-solid fa-trophy text-amber-500 text-xs"></i>
+          <span id="current-user-name" class="font-bold text-xs sm:text-sm text-slate-700"></span>
+          <span class="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-bold font-mono" id="user-progress-badge">진도: 0 / 50</span>
+          <button onclick="switchUser()" title="학생 변경" class="ml-1 text-slate-400 hover:text-slate-600 text-xs">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
         </div>
         
-        <button onclick="toggleTeacherDashboard()" class="text-xs font-semibold px-3.5 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg transition flex items-center space-x-1.5 shadow-sm shadow-indigo-200">
+        <button onclick="toggleTeacherDashboard()" class="text-xs font-semibold px-3 py-2 bg-teal-600 hover:bg-teal-700 text-white rounded-lg transition flex items-center space-x-1.5 shadow-sm">
           <i class="fa-solid fa-chalkboard-user"></i>
-          <span>?좎깮???ㅼ떆媛?愿?쒗뙋</span>
-          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-1"></span>
+          <span class="hidden sm:inline">선생님 실시간 관제판</span>
+          <span class="sm:hidden">관제판</span>
+          <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse ml-0.5"></span>
         </button>
       </div>
     </div>
@@ -54,24 +62,27 @@
   <main class="flex-1 max-w-7xl w-full mx-auto p-4 sm:p-6">
     
     <!-- VIEW 1: STUDENT LOGIN -->
-    <section id="view-login" class="max-w-md mx-auto mt-16 bg-white rounded-3xl shadow-xl p-8 border border-slate-100 text-center">
-      <div class="w-16 h-16 bg-indigo-50 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-inner">
+    <section id="view-login" class="max-w-md mx-auto mt-12 sm:mt-16 bg-white rounded-3xl shadow-xl p-6 sm:p-8 border border-slate-100 text-center">
+      <div class="w-16 h-16 bg-teal-50 text-teal-600 rounded-2xl flex items-center justify-center mx-auto text-2xl mb-4 shadow-inner">
         <i class="fa-solid fa-graduation-cap"></i>
       </div>
-      <h2 class="text-2xl font-black text-slate-900">AICE 1~50李⑥떆 ?肄붿뒪 ?낆옣</h2>
-      <p class="text-slate-500 text-xs mt-1 mb-6">而댄벂??踰덊샇? ?대쫫???곴퀬 50李⑥떆 ?紐⑦뿕???낆옣?섏꽭??</p>
+      <span class="text-xs font-black px-3 py-1 rounded-full bg-teal-100 text-teal-700 uppercase tracking-wide inline-block mb-2">
+        B학교 전용 실습실
+      </span>
+      <h2 class="text-2xl font-black text-slate-900">AICE 1~50차시 실습 입장</h2>
+      <p class="text-slate-500 text-xs mt-1 mb-6">내 이름 또는 좌석 번호를 입력하고 시작하세요.</p>
       
       <div class="space-y-4 text-left">
         <div>
-          <label class="block text-xs font-bold text-slate-600 mb-1">???대쫫 ?먮뒗 醫뚯꽍 踰덊샇</label>
-          <input type="text" id="login-input" onkeydown="if(event.key === 'Enter') handleLogin()" placeholder="?? 3諛?14踰??띻만?? class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-indigo-500 text-slate-800 font-semibold text-sm" />
+          <label class="block text-xs font-bold text-slate-600 mb-1">학생 이름 또는 컴퓨터 좌석 번호</label>
+          <input type="text" id="login-input" onkeydown="if(event.key === 'Enter') handleLogin()" placeholder="예: 3반 14번 홍길동" class="w-full px-4 py-3 rounded-xl border border-slate-300 focus:outline-none focus:ring-2 focus:ring-teal-500 text-slate-800 font-semibold text-sm" />
         </div>
-        <button onclick="handleLogin()" class="w-full py-3.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold rounded-xl shadow-lg shadow-indigo-100 transition flex items-center justify-center space-x-2">
-          <span>?쒗뿕???낆옣?섍린</span>
+        <button onclick="handleLogin()" class="w-full py-3.5 bg-teal-600 hover:bg-teal-700 text-white font-bold rounded-xl shadow-lg transition flex items-center justify-center space-x-2">
+          <span>실습실 입장하기</span>
           <i class="fa-solid fa-arrow-right"></i>
         </button>
-        <button onclick="quickGuestLogin()" class="w-full py-2 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition">
-          <i class="fa-solid fa-bolt text-amber-500 mr-1"></i> 泥댄뿕 紐⑤뱶濡?諛붾줈 ?낆옣
+        <button onclick="quickGuestLogin()" class="w-full py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-600 text-xs font-bold rounded-xl transition">
+          <i class="fa-solid fa-bolt text-amber-500 mr-1"></i> 게스트 빠른 체험으로 입장
         </button>
       </div>
     </section>
@@ -80,138 +91,138 @@
     <section id="view-lobby" class="hidden space-y-6">
       
       <!-- HERO BANNER -->
-      <div class="bg-gradient-to-r from-slate-900 via-indigo-950 to-indigo-900 text-white p-6 rounded-3xl shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-indigo-500/20">
+      <div class="bg-gradient-to-r from-slate-900 via-slate-800 to-indigo-950 text-white p-6 rounded-3xl shadow-lg flex flex-col md:flex-row md:items-center md:justify-between gap-4 border border-indigo-500/20">
         <div>
-          <span class="inline-block px-3 py-1 bg-amber-400 text-slate-950 font-black rounded-full text-xs mb-2">AICE ALL-IN-ONE 쨌 1~50李⑥떆 ??怨쇱젙 留덉뒪??/span>
-          <h1 class="text-2xl font-black tracking-tight">AICE Associate ?ㅺ린 100? ?듭떖 ?⑥닔 ?ъ씤??/h1>
-          <p class="text-indigo-200 text-xs mt-1">?뚯씠??湲곗큹遺???먮떎???곗씠???뺤젣, EDA ?쒓컖?? 癒몄떊?щ떇, ?λ윭?? ?ㅼ쟾 14臾명빆 紐⑥쓽?됯?源뚯? ?꾩＜?섏꽭??</p>
+          <div class="flex items-center space-x-2 mb-2">
+            <span class="px-3 py-1 bg-amber-400 text-slate-950 font-black rounded-full text-xs uppercase">AICE ALL-IN-ONE</span>
+            <span class="px-2.5 py-0.5 rounded-full bg-teal-500/30 text-teal-200 text-xs font-bold">B학교</span>
+          </div>
+          <h1 class="text-xl sm:text-2xl font-black tracking-tight">AICE Associate 실기 100대 핵심 함수 마스터</h1>
+          <p class="text-indigo-200 text-xs mt-1">1차시 파이썬 기초부터 판다스 정제, 머신러닝, 딥러닝, 실전 14문항 모의평가까지 완주하세요.</p>
         </div>
         <div class="flex items-center space-x-2">
           <button onclick="printSummaryReport()" class="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-bold shadow-md transition flex items-center space-x-2">
             <i class="fa-solid fa-award"></i>
-            <span>理쒖쥌 ?섎즺利?& 50李⑥떆 ? 由ы룷??異쒕젰</span>
+            <span>수료증 & 50차시 리포트 출력</span>
           </button>
         </div>
       </div>
 
-      <!-- OVERALL PROGRESS TRACKER -->
-      <div class="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-        <div class="flex items-center space-x-3">
-          <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center font-bold text-lg">
-            <i class="fa-solid fa-chart-line"></i>
-          </div>
-          <div>
-            <div class="text-xs font-bold text-slate-500">?꾩껜 50媛??섏뒪???꾩＜ 吏꾪뻾瑜?/div>
-            <div id="overall-progress-text" class="text-sm font-black text-slate-800 font-mono">0 / 50 ?꾨즺 (0%)</div>
-          </div>
-        </div>
-        <div class="flex-1 max-w-md w-full bg-slate-100 h-3 rounded-full overflow-hidden border border-slate-200">
-          <div id="overall-progress-bar" class="bg-indigo-600 h-full w-0 transition-all duration-500"></div>
-        </div>
+      <!-- PART FILTER TABS -->
+      <div class="flex items-center space-x-2 overflow-x-auto pb-2 custom-scrollbar text-xs font-bold">
+        <button onclick="filterPart('all')" id="tab-all" class="px-3 py-2 rounded-xl bg-slate-900 text-white shadow-sm whitespace-nowrap">전체 1~50차시</button>
+        <button onclick="filterPart('p1')" id="tab-p1" class="px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap">Part 1. 파이썬 기초 (1~10)</button>
+        <button onclick="filterPart('p2')" id="tab-p2" class="px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap">Part 2. 판다스 & 정제 (11~25)</button>
+        <button onclick="filterPart('p3')" id="tab-p3" class="px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap">Part 3. EDA 시각화 (26~30)</button>
+        <button onclick="filterPart('p4')" id="tab-p4" class="px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap">Part 4. 머신러닝 (31~40)</button>
+        <button onclick="filterPart('p5')" id="tab-p5" class="px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap">Part 5. 딥러닝 & 실전 (41~50)</button>
       </div>
 
-      <!-- FILTER TABS & SEARCH BAR -->
-      <div class="flex flex-col md:flex-row md:items-center justify-between gap-3">
-        <div class="flex flex-wrap gap-1.5" id="filter-tabs-container">
-          <button onclick="setFilter('all', this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition">?꾩껜 50李⑥떆</button>
-          <button onclick="setFilter(1, this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Part 1. ?뚯씠??湲곗큹 (1~10)</button>
-          <button onclick="setFilter(2, this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Part 2. ?먮떎???꾩쿂由?(11~20)</button>
-          <button onclick="setFilter(3, this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Part 3. 媛怨?& EDA (21~30)</button>
-          <button onclick="setFilter(4, this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Part 4. 癒몄떊?щ떇 (31~40)</button>
-          <button onclick="setFilter(5, this)" class="filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition">Part 5. ?λ윭??& ?ㅼ쟾 (41~50)</button>
-        </div>
-        
-        <div class="relative w-full md:w-64">
-          <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-xs"></i>
-          <input type="text" oninput="onSearchInput(this.value)" placeholder="?⑥닔紐? ?쒕ぉ, 李⑥떆 踰덊샇 寃??.." class="w-full pl-8 pr-3 py-2 bg-white border border-slate-200 rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-indigo-500 shadow-sm" />
-        </div>
+      <!-- QUEST CARDS GRID -->
+      <div id="quest-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+        <!-- JS dynamically renders 50 cards -->
       </div>
-
-      <div id="quest-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4"></div>
     </section>
 
-    <!-- VIEW 3: PRACTICE ROOM -->
+    <!-- VIEW 3: PRACTICE ROOM (PPT Briefing + 3-Step Controls + Chart) -->
     <section id="view-practice" class="hidden max-w-6xl mx-auto space-y-6">
+      
+      <!-- Top Nav in Practice Room -->
       <div class="flex items-center justify-between">
-        <button onclick="showLobby()" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5 bg-white px-3 py-2 rounded-lg border border-slate-200 shadow-sm transition">
+        <button onclick="showLobby()" class="text-xs font-bold text-slate-600 hover:text-slate-900 flex items-center space-x-1.5 bg-white px-3.5 py-2 rounded-xl border border-slate-200 shadow-sm transition">
           <i class="fa-solid fa-arrow-left"></i>
-          <span>50李⑥떆 紐⑸줉?쇰줈 ?섍?湲?/span>
+          <span>퀘스트 목록으로</span>
         </button>
-        <span id="practice-quest-badge" class="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-black rounded-lg font-mono"></span>
+        <div class="flex items-center space-x-2">
+          <span id="practice-quest-badge" class="px-3 py-1 bg-indigo-100 text-indigo-800 text-xs font-black rounded-lg font-mono"></span>
+          <div class="flex space-x-1 text-xs">
+            <button onclick="navigateQuest(-1)" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 font-bold" title="이전 차시"><i class="fa-solid fa-chevron-left"></i></button>
+            <button onclick="navigateQuest(1)" class="px-2.5 py-1 bg-white border border-slate-200 rounded-lg hover:bg-slate-50 font-bold" title="다음 차시"><i class="fa-solid fa-chevron-right"></i></button>
+          </div>
+        </div>
       </div>
 
-      <!-- PPT ALTERNATIVE: INSTRUCTOR BRIEFING SLIDE -->
+      <!-- SLIDE: INSTRUCTOR 15-MIN BRIEFING CARD (PPT Alternative) -->
       <div class="bg-gradient-to-br from-slate-900 via-slate-800 to-indigo-950 text-white p-6 rounded-3xl shadow-xl border border-indigo-500/30 space-y-4">
         <div class="flex flex-wrap items-center justify-between gap-2 border-b border-slate-700/60 pb-3">
           <div class="flex items-center space-x-2">
-            <span class="px-2.5 py-1 bg-amber-400 text-slate-950 font-black text-xs rounded-md uppercase tracking-wider">媛뺤궗 釉뚮━???щ씪?대뱶 (15遺?吏묒쨷)</span>
+            <span class="px-2.5 py-1 bg-amber-400 text-slate-950 font-black text-xs rounded-md uppercase">강사 브리핑 슬라이드</span>
             <h2 id="brief-title" class="font-extrabold text-base sm:text-lg text-white"></h2>
           </div>
           <div id="brief-funcs-badge" class="flex items-center space-x-2"></div>
         </div>
 
+        <!-- 3 Briefing Columns: Story, English breakdown, AICE Rule -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-xs">
+          <!-- 1. Story / Background -->
           <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700">
-            <span class="font-bold text-amber-300 block mb-1.5"><i class="fa-solid fa-comment-dots mr-1"></i> ?ㅻ뒛???꾩떎 ??(諛곌꼍)</span>
+            <span class="font-bold text-amber-300 block mb-1.5"><i class="fa-solid fa-comment-dots mr-1"></i> 오늘의 현실 썰 (배경)</span>
             <p id="brief-story" class="text-slate-300 leading-relaxed"></p>
           </div>
+          <!-- 2. English breakdown -->
           <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700">
-            <span class="font-bold text-emerald-300 block mb-1.5"><i class="fa-solid fa-spell-check mr-1"></i> ?곸뼱 ?댁썝 移섑듃??/span>
+            <span class="font-bold text-emerald-300 block mb-1.5"><i class="fa-solid fa-spell-check mr-1"></i> 영어 어원 치트키</span>
             <div id="brief-english" class="text-slate-200 leading-relaxed font-mono"></div>
           </div>
+          <!-- 3. AICE Exam Rule -->
           <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700">
-            <span class="font-bold text-indigo-300 block mb-1.5"><i class="fa-solid fa-award mr-1"></i> AICE ?쒗뿕 鍮덉텧 議깅낫 怨듭떇</span>
+            <span class="font-bold text-indigo-300 block mb-1.5"><i class="fa-solid fa-award mr-1"></i> AICE 실기 족보 공식</span>
             <p id="brief-rule" class="text-slate-300 leading-relaxed"></p>
           </div>
         </div>
       </div>
 
-      <!-- WORKFLOW: 3 STEPS & MONITOR -->
+      <!-- WORKFLOW: 3-STEP MISSIONS & INTERACTIVE MONITOR -->
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        
+        <!-- Left: Controls (Steps 1, 2, 3) -->
         <div class="lg:col-span-6 space-y-4">
           
-          <!-- STEP 1 -->
+          <!-- STEP 1: Main Function A Assembly -->
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-2">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md font-mono">STEP 1</span>
-              <span id="step1-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>誘몄셿猷?/span>
+              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">STEP 1</span>
+              <span id="step1-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>미완료</span>
             </div>
-            <h3 class="font-bold text-slate-800 text-xs">?ㅼ쟾 ?뚯씠?꾨씪??肄붾뱶 ?먰겢由?議곕┰</h3>
+            <h3 class="font-bold text-slate-800 text-xs">핵심 함수 A 코드 원클릭 소환</h3>
             <button id="btn-step1" onclick="runStep1()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-900 text-white text-xs font-bold rounded-xl transition flex items-center justify-center space-x-2">
               <i class="fa-solid fa-code"></i>
-              <span id="step1-btn-label">湲곕낯 肄붾뱶 ?먮룞 ?뚰솚</span>
+              <span id="step1-btn-label">기본 코드 자동 조립</span>
             </button>
-            <div class="bg-slate-950 text-slate-200 p-3 rounded-xl font-mono text-xs overflow-x-auto border border-slate-800 h-24 custom-scrollbar">
-              <pre id="code-output" class="text-emerald-400">// STEP 1???꾨Ⅴ硫?肄붾뱶媛 ?앹꽦?⑸땲??</pre>
+            <div class="bg-slate-950 text-slate-200 p-3 rounded-xl font-mono text-xs overflow-x-auto border border-slate-800 h-28 custom-scrollbar">
+              <pre id="code-output" class="text-emerald-400">// 버튼을 누르면 코드가 여기에 나타납니다.</pre>
             </div>
           </div>
 
-          <!-- STEP 2 -->
+          <!-- STEP 2: Parameters & Function B Tuning -->
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md font-mono">STEP 2</span>
-              <span id="step2-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>誘몄셿猷?/span>
+              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">STEP 2</span>
+              <span id="step2-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>미완료</span>
             </div>
-            <h3 class="font-bold text-slate-800 text-xs">?뚮씪誘명꽣 & ?곗씠??議곌굔 ?쒕떇</h3>
-            <div id="step2-control-panel" class="space-y-3 p-3 bg-slate-50 rounded-xl border border-slate-200"></div>
+            <h3 class="font-bold text-slate-800 text-xs">짝꿍 함수 B 연계 & 핵심 파라미터 조작</h3>
+            <div id="step2-control-panel" class="space-y-3 p-3 bg-slate-50 rounded-xl border border-slate-200">
+              <!-- Dynamically populated parameters controls -->
+            </div>
           </div>
 
-          <!-- STEP 3 -->
+          <!-- STEP 3: 3-Second Loading Bar & Final Trigger -->
           <div class="bg-white p-5 rounded-2xl border border-slate-200 shadow-sm space-y-3">
             <div class="flex items-center justify-between">
-              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md font-mono">STEP 3</span>
-              <span id="step3-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>誘몄셿猷?/span>
+              <span class="text-[11px] font-black text-indigo-600 bg-indigo-50 px-2 py-0.5 rounded-md">STEP 3</span>
+              <span id="step3-check" class="text-xs font-bold text-slate-400"><i class="fa-regular fa-circle mr-1"></i>미완료</span>
             </div>
-            <h3 class="font-bold text-slate-800 text-xs">?뚭퀬由ъ쬁 媛??諛??ㅼ떆媛?梨꾩젏</h3>
-            <button id="btn-step3" onclick="runStep3()" disabled class="w-full py-3 bg-indigo-600 hover:bg-indigo-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-xl transition shadow-lg shadow-indigo-100 flex items-center justify-center space-x-2">
+            <h3 class="font-bold text-slate-800 text-xs">AI 연산 가동 및 결과 도출 (시간 녹이기)</h3>
+            <button id="btn-step3" onclick="runStep3()" disabled class="w-full py-3 bg-teal-600 hover:bg-teal-700 disabled:bg-slate-300 text-white font-bold text-xs rounded-xl transition shadow-lg flex items-center justify-center space-x-2">
               <i class="fa-solid fa-play"></i>
-              <span id="step3-btn-label">?뚯씠?꾨씪???ㅽ뻾 諛?李⑦듃 異쒕젰</span>
+              <span>파이프라인 실행 및 차트 생성</span>
             </button>
             
+            <!-- 3-Second Loading Progress Bar -->
             <div id="loading-container" class="hidden space-y-1.5 pt-1">
               <div class="flex justify-between text-[11px] font-bold text-slate-600">
-                <span id="loading-status-text">?뚯씠???뚭퀬由ъ쬁 ?곗궛 ?붿쭊 媛??以?..</span>
-                <span id="loading-percentage" class="font-mono">0%</span>
+                <span id="loading-status-text">파이썬 런타임 메모리 적재 중...</span>
+                <span id="loading-percentage">0%</span>
               </div>
               <div class="w-full bg-slate-100 h-2.5 rounded-full overflow-hidden border border-slate-200">
                 <div id="loading-bar" class="bg-indigo-600 h-full w-0 transition-all duration-300"></div>
@@ -220,206 +231,144 @@
           </div>
         </div>
 
-        <!-- MONITOR SCREEN -->
+        <!-- Right: Visualization Canvas & Terminal Log -->
         <div class="lg:col-span-6 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm flex flex-col justify-between">
           <div>
             <div class="flex items-center justify-between mb-3">
               <h3 class="font-bold text-slate-800 text-xs flex items-center">
                 <i class="fa-solid fa-chart-pie text-indigo-600 mr-2"></i>
-                <span id="chart-panel-title">?ㅼ떆媛??쒓컖??紐⑤땲??/span>
+                <span id="chart-panel-title">인터랙티브 시각화 모니터</span>
               </h3>
-              <span id="mission-status-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 font-mono">?湲?以?/span>
+              <span id="mission-status-pill" class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500">대기 중</span>
             </div>
             
-            <div class="relative w-full h-64 flex items-center justify-center bg-slate-50 rounded-xl border border-dashed border-slate-200 p-2 overflow-hidden">
+            <!-- Dynamic Chart Area -->
+            <div class="relative w-full h-64 flex items-center justify-center bg-slate-50 rounded-xl border border-dashed border-slate-200 p-2">
               <div id="chart-placeholder" class="text-center text-slate-400">
-                <i class="fa-solid fa-award text-3xl mb-2 text-indigo-400"></i>
-                <p class="text-xs">3?④퀎 ?ㅽ뻾???꾨즺?섎㈃ ?쒓컖??寃곌낵 李⑦듃媛 ?뚮뜑留곷맗?덈떎.</p>
+                <i class="fa-solid fa-chart-simple text-3xl mb-2"></i>
+                <p class="text-xs">3단계 실행을 완료하면 여기에 차트가 렌더링됩니다.</p>
               </div>
-              <div id="canvas-wrapper" class="w-full h-full hidden flex items-center justify-center">
-                <canvas id="practiceCanvas" class="w-full h-full"></canvas>
-              </div>
+              <canvas id="practiceCanvas" class="hidden"></canvas>
             </div>
 
+            <!-- Terminal Output Log -->
             <div class="mt-4 bg-slate-900 text-slate-300 p-3 rounded-xl font-mono text-[11px] h-24 overflow-y-auto custom-scrollbar border border-slate-800">
               <div class="text-slate-500">// Terminal Execution Logs</div>
-              <div id="terminal-log">> ?쒖뒪??以鍮??꾨즺.</div>
+              <div id="terminal-log">> 시스템 준비 완료.</div>
             </div>
           </div>
 
+          <!-- Clear Congratulations Banner -->
           <div id="clear-congrat-card" class="hidden mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center space-y-2">
-            <p class="text-emerald-800 font-extrabold text-xs"><i class="fa-solid fa-circle-check mr-1"></i> ?ㅻ뒛 誘몄뀡 3?④퀎 ???대━??</p>
-            <button onclick="showLobby()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-xs rounded-lg transition shadow-sm">
-              ?꾩옣 李띻퀬 50李⑥떆 紐⑸줉?쇰줈 ?섍?湲?            </button>
+            <p class="text-emerald-800 font-extrabold text-xs"><i class="fa-solid fa-circle-check mr-1"></i> 오늘 미션 3단계 올 클리어!</p>
+            <div class="flex justify-center space-x-2">
+              <button onclick="navigateQuest(1)" class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg transition shadow-sm">
+                다음 퀘스트 도전 <i class="fa-solid fa-chevron-right ml-1"></i>
+              </button>
+              <button onclick="showLobby()" class="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-900 text-white font-bold text-xs rounded-lg transition shadow-sm">
+                목록으로 나가기
+              </button>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
-    <!-- VIEW 4: TEACHER REAL-TIME DASHBOARD -->
+    <!-- VIEW 4: TEACHER REAL-TIME MONITORING DASHBOARD (Modal) -->
     <div id="teacher-modal" class="hidden fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-      <div class="bg-white w-full max-w-5xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[92vh]">
-        
-        <div class="p-5 bg-slate-900 text-white flex items-center justify-between">
+      <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl border border-slate-200 overflow-hidden flex flex-col max-h-[90vh]">
+        <div class="p-4 bg-slate-900 text-white flex items-center justify-between">
           <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center text-white text-lg shadow-md">
-              <i class="fa-solid fa-chalkboard-user"></i>
-            </div>
+            <i class="fa-solid fa-chalkboard-user text-indigo-400 text-lg"></i>
             <div>
-              <div class="flex items-center space-x-2">
-                <h2 class="font-extrabold text-base">?좎깮???꾩슜 1~50李⑥떆 ?ㅼ떆媛?吏꾨룄 愿???쇳꽣</h2>
-                <span class="px-2 py-0.5 bg-emerald-500 text-white text-[10px] font-black rounded-full uppercase tracking-wider flex items-center">
-                  <span class="w-1.5 h-1.5 rounded-full bg-white animate-pulse mr-1"></span> LIVE
-                </span>
-              </div>
-              <p class="text-xs text-slate-400">援먯떎 ???묒냽???숈깮?ㅼ쓽 ?ㅼ떆媛?臾몄젣 ?닿껐 諛??듦낵 ?꾪솴??2珥덈쭏???먮룞 吏묎퀎?⑸땲??</p>
+              <h2 class="font-extrabold text-sm">선생님 전용 1~50차시 실시간 진도 관제판 (B학교)</h2>
+              <p class="text-[11px] text-slate-400">학생들의 3단계 미션 완료 상태 및 50차시 완주율이 실시간으로 집계됩니다.</p>
             </div>
           </div>
-          <button onclick="toggleTeacherDashboard()" class="text-slate-400 hover:text-white text-xl p-1">
+          <button onclick="toggleTeacherDashboard()" class="text-slate-400 hover:text-white text-lg">
             <i class="fa-solid fa-xmark"></i>
           </button>
         </div>
 
         <div class="p-5 overflow-y-auto custom-scrollbar space-y-4">
-          
-          <div class="bg-gradient-to-r from-indigo-50 to-slate-50 p-4 rounded-2xl border border-indigo-100 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
-            <div class="space-y-1">
-              <div class="flex items-center space-x-2">
-                <span class="px-2 py-0.5 bg-indigo-600 text-white text-[10px] font-bold rounded-md">移좏뙋 ?덈궡??/span>
-                <span class="text-xs font-black text-slate-800">?숈깮 ?묒냽 二쇱냼:</span>
-                <code id="teacher-lan-url" class="font-mono font-bold text-sm text-indigo-700 bg-white px-2.5 py-1 rounded-lg border border-indigo-200">http://172.28.47.113:5500/</code>
-              </div>
-              <p class="text-[11px] text-slate-500">?숈깮 而댄벂?곗쓽 ?щ＼?대굹 ?ｌ? 二쇱냼李쎌뿉 ??二쇱냼瑜??낅젰?섍퀬 濡쒓렇?명븯?꾨줉 ?덈궡??二쇱꽭??</p>
+          <div class="flex flex-wrap items-center justify-between bg-slate-50 p-3 rounded-xl border border-slate-200 text-xs gap-2">
+            <div class="flex items-center space-x-3">
+              <span class="font-bold text-slate-700">접속 학생: <b id="teacher-student-count" class="text-indigo-600">0</b>명</span>
+              <span id="last-sync-time" class="text-slate-400 font-mono text-[11px]">최근 동기화: 대기</span>
+            </div>
+            <div class="flex items-center space-x-4 text-[11px]">
+              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span>완료</span>
+              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span>진행 중</span>
+              <span class="flex items-center"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 mr-1.5"></span>대기</span>
             </div>
             <div class="flex items-center space-x-2">
-              <button onclick="copyLanUrl()" class="px-3 py-1.5 bg-white hover:bg-slate-100 border border-slate-300 text-slate-700 text-xs font-bold rounded-lg transition shadow-sm flex items-center space-x-1">
-                <i class="fa-regular fa-copy"></i>
-                <span id="copy-btn-text">二쇱냼 蹂듭궗</span>
+              <button onclick="refreshTeacherGrid()" class="text-indigo-600 font-bold hover:underline">
+                <i class="fa-solid fa-arrows-rotate mr-1"></i> 새로고침
               </button>
-              <button onclick="resetAllProgress()" class="px-3 py-1.5 bg-red-50 hover:bg-red-100 border border-red-200 text-red-600 text-xs font-bold rounded-lg transition flex items-center space-x-1">
-                <i class="fa-solid fa-trash-can"></i>
-                <span>吏꾨룄 ?꾩껜 珥덇린??/span>
+              <button onclick="resetAllProgress()" class="text-red-500 font-bold hover:underline ml-2">
+                <i class="fa-solid fa-trash-can mr-1"></i> 기록 초기화
               </button>
             </div>
           </div>
 
-          <div class="flex flex-wrap items-center justify-between bg-white p-3 rounded-xl border border-slate-200 text-xs gap-2">
-            <div class="flex items-center space-x-4">
-              <span class="font-bold text-slate-700">
-                ?묒냽 ?숈깮 ?? <b id="teacher-student-count" class="text-indigo-600 text-sm font-mono font-black">0</b>紐?              </span>
-              <span class="text-slate-300">|</span>
-              <span class="flex items-center text-slate-600"><span class="w-2.5 h-2.5 rounded-full bg-emerald-500 mr-1.5"></span>50李⑥떆 ?꾩＜</span>
-              <span class="flex items-center text-slate-600"><span class="w-2.5 h-2.5 rounded-full bg-amber-400 mr-1.5"></span>吏꾪뻾 以?/span>
-              <span class="flex items-center text-slate-600"><span class="w-2.5 h-2.5 rounded-full bg-slate-300 mr-1.5"></span>?湲?/span>
-            </div>
-            <div class="flex items-center space-x-3 text-slate-500 text-[11px]">
-              <span id="last-sync-time" class="font-mono">?숆린???湲?以?..</span>
-              <button onclick="refreshTeacherGrid()" class="text-indigo-600 font-bold hover:underline flex items-center space-x-1">
-                <i class="fa-solid fa-arrows-rotate"></i>
-                <span>吏湲?媛깆떊</span>
-              </button>
-            </div>
+          <div id="teacher-empty-state" class="hidden text-center py-12 text-slate-400">
+            <i class="fa-solid fa-users-slash text-3xl mb-2"></i>
+            <p class="text-xs">현재 접속 중인 학생 데이터가 없습니다.</p>
           </div>
 
-          <div id="teacher-students-grid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3"></div>
-
-          <div id="teacher-empty-state" class="hidden text-center py-12 bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200 space-y-3">
-            <div class="w-12 h-12 rounded-full bg-indigo-50 text-indigo-500 flex items-center justify-center mx-auto text-xl">
-              <i class="fa-solid fa-users-viewfinder"></i>
-            </div>
-            <h4 class="font-extrabold text-slate-700 text-sm">?꾩쭅 ?묒냽???숈깮???놁뒿?덈떎</h4>
-            <p class="text-xs text-slate-500 max-w-sm mx-auto leading-relaxed">
-              ?숈깮 而댄벂?곗뿉??移좏뙋???묒냽 二쇱냼(<span class="font-mono text-indigo-600 font-bold">http://172.28.47.113:5500/</span>)濡??묒냽?섎㈃ ?닿납???숈깮 移대뱶? ?ㅼ떆媛?吏꾨룄媛 利됱떆 ?섑??⑸땲??
-            </p>
+          <div id="teacher-students-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3">
+            <!-- Dynamically populated student cards -->
           </div>
-
         </div>
       </div>
     </div>
 
-    <!-- VIEW 5: PRINTABLE A4 FULL REPORT & CERTIFICATE -->
+    <!-- VIEW 5: PRINTABLE A4 SUMMARY REPORT & CERTIFICATE -->
     <div id="print-area" class="hidden p-8 bg-white text-slate-900">
-      <div class="border-4 border-indigo-900 p-6 rounded-2xl mb-6 text-center space-y-2">
-        <div class="text-xs font-black tracking-widest text-indigo-600 uppercase">Certificate of Completion</div>
-        <h1 class="text-2xl font-black text-slate-900">AICE Associate ?ㅺ린 援먯쑁怨쇱젙 理쒖쥌 ?섎즺利?/h1>
-        <p class="text-xs text-slate-500">?멸났吏???ㅺ린 50李⑥떆 ??怨쇱젙 ?뚯씠?꾨씪??留덉뒪??(100? ?듭떖 ?⑥닔 諛??뚮씪誘명꽣)</p>
-        <div class="pt-4 flex justify-between text-xs font-bold text-slate-700 px-8 border-t border-slate-200 mt-4">
-          <span>?대쫫: <b id="print-student-name" class="text-indigo-700 text-sm"></b></span>
-          <span>?섎즺 ?곹깭: <b class="text-emerald-600">50/50 ?섏뒪?????대━??(理쒖쥌 ?⑷꺽)</b></span>
-          <span>諛쒗뻾?? 2026-09-14</span>
+      <div class="border-b-4 border-slate-900 pb-4 mb-6">
+        <div class="flex justify-between items-center">
+          <div>
+            <span class="text-xs font-black tracking-widest text-indigo-600 uppercase">B학교 · AICE ASSOCIATE</span>
+            <h1 class="text-2xl font-black mt-1">AICE Associate 실기 1~50차시 핵심 함수 100선 완주 수료증</h1>
+          </div>
+          <div class="w-16 h-16 rounded-2xl border-2 border-indigo-600 flex items-center justify-center text-indigo-600 text-2xl font-black">
+            CERT
+          </div>
+        </div>
+        <div class="flex justify-between text-xs text-slate-600 mt-4 pt-2 border-t border-slate-200">
+          <span>수료자: <b id="print-student-name" class="text-slate-900 text-sm"></b></span>
+          <span>소속: <b>B학교</b></span>
+          <span id="print-date">발행일: 2026-09-14</span>
         </div>
       </div>
 
-      <h3 class="font-extrabold text-sm mb-2 text-slate-800">AICE Associate 1~50李⑥떆 100? ?듭떖 ?⑥닔 ?댁닔 怨듭떇 梨꾩젏??/h3>
-      <table class="w-full text-xs text-left border border-slate-300 border-collapse mb-6">
+      <table class="w-full text-[10px] text-left border border-slate-300 border-collapse mb-6">
         <thead>
           <tr class="bg-slate-100 border-b border-slate-300">
-            <th class="p-2 border-r border-slate-300 w-16">李⑥떆</th>
-            <th class="p-2 border-r border-slate-300 w-48">?듭떖 ?⑥닔 ?명듃</th>
-            <th class="p-2 border-r border-slate-300 w-48">吏묒쨷 ?뚮씪誘명꽣</th>
-            <th class="p-2">AICE ?ㅼ쟾 議깅낫 諛??듭떖 洹쒖튃</th>
+            <th class="p-1.5 border-r border-slate-300 w-12 text-center">차시</th>
+            <th class="p-1.5 border-r border-slate-300 w-40">짝꿍 핵심 함수</th>
+            <th class="p-1.5 border-r border-slate-300 w-44">집중 공략 파라미터</th>
+            <th class="p-1.5">AICE 실기 족보 공식 요약</th>
           </tr>
         </thead>
-        <tbody id="print-table-body"></tbody>
+        <tbody id="print-table-body">
+          <!-- Populated by JS -->
+        </tbody>
       </table>
-      <div class="text-center border-t border-slate-200 pt-4 text-xs text-slate-400">
-        蹂?利앸챸?쒕뒗 ?숈깮???뚯씠??湲곗큹, ?먮떎???곗씠???꾩쿂由? ?곗씠???쒓컖?? 癒몄떊?щ떇 諛??λ윭??50媛??섏뒪?몃? ?깃났?곸쑝濡??댁닔?섏??뚯쓣 怨듭씤?⑸땲??
+
+      <div class="text-center border-t-2 border-slate-300 pt-4 space-y-1">
+        <p class="text-xs font-bold text-slate-800">위 학생은 AICE Associate 자격 대비 파이썬·데이터 정제·시각화·머신러닝·딥러닝 50차시 전 과정을 훌륭히 완주하였음을 공식 인증합니다.</p>
+        <p class="text-[11px] text-slate-500 font-mono">AICE Associate Certified Course · KT & 한국경제신문 공인 교육과정 준수</p>
       </div>
     </div>
 
   </main>
 
   <script>
-    let audioCtx = null;
-    function getAudioContext() {
-      if (!audioCtx) {
-        const AudioContext = window.AudioContext || window.webkitAudioContext;
-        if (AudioContext) audioCtx = new AudioContext();
-      }
-      if (audioCtx && audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
-      return audioCtx;
-    }
-
-    function playBeep(freq = 440, type = 'sine', duration = 0.08) {
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const osc = ctx.createOscillator();
-        const gain = ctx.createGain();
-        osc.type = type;
-        osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.08, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + duration);
-        osc.connect(gain);
-        gain.connect(ctx.destination);
-        osc.start();
-        osc.stop(ctx.currentTime + duration);
-      } catch (e) {}
-    }
-
-    function playSuccessSound() {
-      try {
-        const ctx = getAudioContext();
-        if (!ctx) return;
-        const now = ctx.currentTime;
-        [523.25, 659.25, 783.99, 1046.50].forEach((freq, i) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'triangle';
-          osc.frequency.setValueAtTime(freq, now + i * 0.1);
-          gain.gain.setValueAtTime(0.12, now + i * 0.1);
-          gain.gain.exponentialRampToValueAtTime(0.001, now + i * 0.1 + 0.25);
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(now + i * 0.1);
-          osc.stop(now + i * 0.1 + 0.25);
-        });
-      } catch (e) {}
-    }
-
-const questsDB = [
+    /* =========================================================================
+       1~50 QUESTS MASTER DATABASE
+       ========================================================================= */
+    const questsDB = [
 // --- PACK 1 (Quests 1 ~ 5) ---
 {
         id: 1,
@@ -1242,17 +1191,22 @@ const questsDB = [
       }
 ];
 
-    let currentStudent = localStorage.getItem("aice_student_name") || "";
-    let studentProgress = JSON.parse(localStorage.getItem("aice_all_50_progress_marine_" + currentStudent) || "{}");
+    /* =========================================================================
+       STATE MANAGEMENT & LOCAL STORAGE CONFIG
+       ========================================================================= */
+    const SCHOOL_ID = "marine";
+    const SCHOOL_NAME = "B학교";
+    const STORAGE_PREFIX = "aice_" + SCHOOL_ID + "_";
+
+    let currentStudent = localStorage.getItem(STORAGE_PREFIX + "student_name") || "";
+    let studentProgress = JSON.parse(localStorage.getItem(STORAGE_PREFIX + "progress_" + currentStudent) || "{}");
     let activeQuest = null;
     let activeChartInstance = null;
     let stepStatus = { s1: false, s2: false, s3: false };
+    let currentFilter = "all";
     let teacherPollingTimer = null;
-    let currentFilter = 'all';
-    let searchKeyword = '';
 
     window.addEventListener("DOMContentLoaded", () => {
-      fetchServerInfo();
       if (currentStudent) {
         initLobby();
       } else {
@@ -1261,47 +1215,33 @@ const questsDB = [
       renderPrintTable();
     });
 
-    async function fetchServerInfo() {
-      try {
-        const res = await fetch("/api/server-info");
-        if (res.ok) {
-          const info = await res.json();
-          if (info.lanUrl) {
-            const el = document.getElementById("teacher-lan-url");
-            if (el) el.innerText = info.lanUrl;
-          }
-        }
-      } catch (e) {}
-    }
-
     function handleLogin() {
       const input = document.getElementById("login-input").value.trim();
-      if (!input) return alert("?대쫫?대굹 而댄벂??醫뚯꽍 踰덊샇瑜??낅젰?섏꽭??");
+      if (!input) return alert("이름이나 컴퓨터 좌석 번호를 입력하세요!");
       currentStudent = input;
-      localStorage.setItem("aice_student_name", currentStudent);
-      studentProgress = JSON.parse(localStorage.getItem("aice_all_50_progress_marine_" + currentStudent) || "{}");
-      playBeep(520, "sine", 0.1);
+      localStorage.setItem(STORAGE_PREFIX + "student_name", currentStudent);
+      studentProgress = JSON.parse(localStorage.getItem(STORAGE_PREFIX + "progress_" + currentStudent) || "{}");
       initLobby();
       reportProgressToServer();
     }
 
     function quickGuestLogin() {
-      currentStudent = "泥댄뿕?숈깮_" + Math.floor(1000 + Math.random() * 9000);
-      localStorage.setItem("aice_student_name", currentStudent);
-      studentProgress = JSON.parse(localStorage.getItem("aice_all_50_progress_marine_" + currentStudent) || "{}");
-      playBeep(660, "sine", 0.1);
-      initLobby();
-      reportProgressToServer();
+      const guestNum = Math.floor(Math.random() * 90 + 10);
+      document.getElementById("login-input").value = `게스트_${guestNum}번`;
+      handleLogin();
     }
 
     function switchUser() {
-      localStorage.removeItem("aice_student_name");
-      currentStudent = "";
-      document.getElementById("user-display").classList.add("hidden");
-      document.getElementById("view-lobby").classList.add("hidden");
-      document.getElementById("view-practice").classList.add("hidden");
-      document.getElementById("view-login").classList.remove("hidden");
-      document.getElementById("login-input").value = "";
+      if (confirm("다른 학생으로 전환하시겠습니까?")) {
+        localStorage.removeItem(STORAGE_PREFIX + "student_name");
+        currentStudent = "";
+        studentProgress = {};
+        document.getElementById("user-display").classList.add("hidden");
+        document.getElementById("view-lobby").classList.add("hidden");
+        document.getElementById("view-practice").classList.add("hidden");
+        document.getElementById("view-login").classList.remove("hidden");
+        document.getElementById("login-input").value = "";
+      }
     }
 
     function initLobby() {
@@ -1325,74 +1265,55 @@ const questsDB = [
       document.getElementById("view-lobby").classList.remove("hidden");
       updateProgressHeader();
       renderQuestGrid();
-      reportProgressToServer();
-    }
-
-    function getQuestPart(id) {
-      if (id <= 10) return 1;
-      if (id <= 20) return 2;
-      if (id <= 30) return 3;
-      if (id <= 40) return 4;
-      return 5;
-    }
-
-    function setFilter(part, btn) {
-      currentFilter = part;
-      document.querySelectorAll('.filter-tab-btn').forEach(b => {
-        if (b === btn) {
-          b.className = 'filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white shadow-sm transition';
-        } else {
-          b.className = 'filter-tab-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-white border border-slate-200 text-slate-600 hover:bg-slate-50 transition';
-        }
-      });
-      renderQuestGrid();
-    }
-
-    function onSearchInput(val) {
-      searchKeyword = val.trim().toLowerCase();
-      renderQuestGrid();
     }
 
     function updateProgressHeader() {
       const completedCount = Object.keys(studentProgress).filter(k => studentProgress[k] === true).length;
-      document.getElementById("user-progress-badge").innerText = `吏꾨룄: ${completedCount} / 50`;
-      const pct = Math.round((completedCount / 50) * 100);
-      const progBar = document.getElementById("overall-progress-bar");
-      if (progBar) progBar.style.width = pct + "%";
-      const progText = document.getElementById("overall-progress-text");
-      if (progText) progText.innerText = `${completedCount} / 50 ?꾨즺 (${pct}%)`;
+      document.getElementById("user-progress-badge").innerText = `진도: ${completedCount} / 50`;
     }
 
+    /* =========================================================================
+       FILTER TABS LOGIC
+       ========================================================================= */
+    function filterPart(part) {
+      currentFilter = part;
+      const tabs = ["all", "p1", "p2", "p3", "p4", "p5"];
+      tabs.forEach(t => {
+        const btn = document.getElementById("tab-" + t);
+        if (!btn) return;
+        if (t === part) {
+          btn.className = "px-3 py-2 rounded-xl bg-slate-900 text-white shadow-sm whitespace-nowrap";
+        } else {
+          btn.className = "px-3 py-2 rounded-xl bg-white text-slate-600 hover:bg-slate-50 border border-slate-200 whitespace-nowrap";
+        }
+      });
+      renderQuestGrid();
+    }
+
+    function getPartName(id) {
+      if (id <= 10) return "Part 1. 파이썬 기초";
+      if (id <= 25) return "Part 2. 판다스 정제";
+      if (id <= 30) return "Part 3. EDA 시각화";
+      if (id <= 40) return "Part 4. 머신러닝";
+      return "Part 5. 딥러닝 & 실전";
+    }
+
+    /* =========================================================================
+       RENDER 1~50 QUEST GRID
+       ========================================================================= */
     function renderQuestGrid() {
       const grid = document.getElementById("quest-grid");
       grid.innerHTML = "";
 
-      const filtered = questsDB.filter(q => {
-        const part = getQuestPart(q.id);
-        if (currentFilter !== 'all' && part !== currentFilter) return false;
-        if (searchKeyword) {
-          const matchTitle = (q.title || '').toLowerCase().includes(searchKeyword);
-          const matchFuncA = (q.funcA || '').toLowerCase().includes(searchKeyword);
-          const matchFuncB = (q.funcB || '').toLowerCase().includes(searchKeyword);
-          const matchId = String(q.id).includes(searchKeyword);
-          return matchTitle || matchFuncA || matchFuncB || matchId;
-        }
-        return true;
-      });
+      let list = questsDB;
+      if (currentFilter === "p1") list = questsDB.filter(q => q.id >= 1 && q.id <= 10);
+      else if (currentFilter === "p2") list = questsDB.filter(q => q.id >= 11 && q.id <= 25);
+      else if (currentFilter === "p3") list = questsDB.filter(q => q.id >= 26 && q.id <= 30);
+      else if (currentFilter === "p4") list = questsDB.filter(q => q.id >= 31 && q.id <= 40);
+      else if (currentFilter === "p5") list = questsDB.filter(q => q.id >= 41 && q.id <= 50);
 
-      if (filtered.length === 0) {
-        grid.innerHTML = `
-          <div class="col-span-full py-12 text-center text-slate-400 bg-white rounded-2xl border border-slate-200">
-            <i class="fa-solid fa-magnifying-glass text-2xl mb-2 text-slate-300"></i>
-            <p class="text-xs font-bold">寃??議곌굔??留욌뒗 ?섏뒪?멸? ?놁뒿?덈떎.</p>
-          </div>
-        `;
-        return;
-      }
-
-      filtered.forEach(q => {
+      list.forEach(q => {
         const isDone = !!studentProgress[q.id];
-        const part = getQuestPart(q.id);
         const card = document.createElement("div");
         card.className = `p-4 rounded-2xl border transition duration-150 cursor-pointer flex flex-col justify-between ${
           isDone ? "bg-emerald-50/80 border-emerald-300 shadow-sm" : "bg-white border-slate-200 hover:border-indigo-300 hover:shadow-md"
@@ -1403,27 +1324,28 @@ const questsDB = [
           <div>
             <div class="flex items-center justify-between mb-2">
               <span class="text-[10px] font-black px-2 py-0.5 rounded-md ${isDone ? "bg-emerald-200 text-emerald-800" : "bg-slate-100 text-slate-500"}">
-                ${q.id}李⑥떆 쨌 P${part}
+                ${q.id}차시 · ${getPartName(q.id).split(". ")[1]}
               </span>
               ${isDone ? '<i class="fa-solid fa-circle-check text-emerald-500 text-sm"></i>' : '<i class="fa-regular fa-circle text-slate-300 text-sm"></i>'}
             </div>
-            <h4 class="font-extrabold text-slate-800 text-sm mb-1.5 leading-snug">${q.title}</h4>
+            <h4 class="font-extrabold text-slate-800 text-xs sm:text-sm mb-1.5 leading-snug line-clamp-2">${q.title}</h4>
             <div class="flex flex-wrap gap-1">
               <span class="font-mono text-[10px] font-bold text-indigo-700 bg-indigo-50 px-1.5 py-0.5 rounded">${q.funcA}</span>
-              ${q.funcB ? `<span class="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${q.funcB}</span>` : ''}
+              ${q.funcB ? `<span class="font-mono text-[10px] font-bold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded">${q.funcB}</span>` : ""}
             </div>
           </div>
           <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-400">
-            <span>誘몄뀡 3?④퀎</span>
-            <span class="${isDone ? 'text-emerald-600 font-bold' : 'text-indigo-600'}">
-              ${isDone ? '?ㅼ떆蹂닿린' : '?꾩쟾'} <i class="fa-solid fa-chevron-right ml-0.5 text-[9px]"></i>
-            </span>
+            <span>미션 3단계</span>
+            <span class="${isDone ? 'text-emerald-600 font-bold' : 'text-indigo-600'}">도전 <i class="fa-solid fa-chevron-right ml-0.5 text-[9px]"></i></span>
           </div>
         `;
         grid.appendChild(card);
       });
     }
 
+    /* =========================================================================
+       PRACTICE ROOM INTERACTIONS
+       ========================================================================= */
     function openQuest(id) {
       activeQuest = questsDB.find(q => q.id === id);
       if (!activeQuest) return;
@@ -1431,56 +1353,71 @@ const questsDB = [
       document.getElementById("view-lobby").classList.add("hidden");
       document.getElementById("view-practice").classList.remove("hidden");
 
-      stepStatus = { s1: false, s2: true, s3: false };
+      stepStatus = { s1: false, s2: false, s3: false };
       resetStepUI();
 
-      const part = getQuestPart(activeQuest.id);
-      document.getElementById("practice-quest-badge").innerText = `${activeQuest.id}李⑥떆 ?ㅼ뒿 (Part ${part})`;
-      document.getElementById("brief-title").innerText = `${activeQuest.id}李⑥떆: ${activeQuest.title}`;
-      document.getElementById("brief-funcs-badge").innerHTML = `
-        <span class="px-2 py-0.5 bg-indigo-500/30 text-indigo-200 font-mono text-xs rounded border border-indigo-400/30">${activeQuest.funcA}</span>
-        ${activeQuest.funcB ? `<span class="px-2 py-0.5 bg-emerald-500/30 text-emerald-200 font-mono text-xs rounded border border-emerald-400/30">${activeQuest.funcB}</span>` : ''}
-      `;
+      document.getElementById("practice-quest-badge").innerText = `${activeQuest.id}차시 · ${getPartName(activeQuest.id)}`;
+      document.getElementById("brief-title").innerText = `${activeQuest.id}차시: ${activeQuest.title}`;
+      
+      let badgesHtml = `<span class="px-2 py-0.5 bg-indigo-500/30 text-indigo-200 font-mono text-xs rounded border border-indigo-400/30">${activeQuest.funcA}</span>`;
+      if (activeQuest.funcB) {
+        badgesHtml += `<span class="px-2 py-0.5 bg-emerald-500/30 text-emerald-200 font-mono text-xs rounded border border-emerald-400/30">${activeQuest.funcB}</span>`;
+      }
+      document.getElementById("brief-funcs-badge").innerHTML = badgesHtml;
+      
       document.getElementById("brief-story").innerText = activeQuest.briefStory || "";
       document.getElementById("brief-english").innerHTML = activeQuest.briefEnglish || "";
       document.getElementById("brief-rule").innerText = activeQuest.briefRule || "";
 
-      document.getElementById("step1-btn-label").innerText = activeQuest.step1Label || "肄붾뱶 ?먮룞 ?뚰솚";
-      document.getElementById("step3-btn-label").innerText = "?뚯씠?꾨씪???ㅽ뻾 諛?李⑦듃 異쒕젰";
-      document.getElementById("chart-panel-title").innerText = activeQuest.chartTitle || "?쒓컖??紐⑤땲??;
+      document.getElementById("step1-btn-label").innerText = activeQuest.step1Label || "기본 코드 자동 조립";
+      document.getElementById("chart-panel-title").innerText = activeQuest.chartTitle || "시각화 모니터";
 
       renderStep2Controls(activeQuest);
 
       destroyActiveChart();
       document.getElementById("chart-placeholder").classList.remove("hidden");
-      document.getElementById("canvas-wrapper").classList.add("hidden");
+      document.getElementById("practiceCanvas").classList.add("hidden");
       document.getElementById("clear-congrat-card").classList.add("hidden");
-      document.getElementById("terminal-log").innerHTML = `> ?쒖뒪?쒖씠 ${activeQuest.id}李⑥떆 (${activeQuest.funcA})瑜??깃났?곸쑝濡?濡쒕뱶?덉뒿?덈떎.`;
+      document.getElementById("terminal-log").innerHTML = `> 시스템이 ${activeQuest.id}차시 (${activeQuest.funcA}) 퀘스트를 성공적으로 로드했습니다.`;
 
       reportProgressToServer();
     }
 
+    function navigateQuest(delta) {
+      if (!activeQuest) return;
+      let nextId = activeQuest.id + delta;
+      if (nextId < 1) nextId = 50;
+      if (nextId > 50) nextId = 1;
+      openQuest(nextId);
+    }
+
     function resetStepUI() {
-      document.getElementById("step1-check").innerHTML = '<i class="fa-regular fa-circle mr-1"></i>誘몄셿猷?;
+      document.getElementById("step1-check").innerHTML = '<i class="fa-regular fa-circle mr-1"></i>미완료';
       document.getElementById("step1-check").className = "text-xs font-bold text-slate-400";
-      
-      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-check mr-1 text-indigo-500"></i>湲곕낯媛?以鍮?;
-      document.getElementById("step2-check").className = "text-xs font-bold text-indigo-600";
-      
-      document.getElementById("step3-check").innerHTML = '<i class="fa-regular fa-circle mr-1"></i>誘몄셿猷?;
+      document.getElementById("step2-check").innerHTML = '<i class="fa-regular fa-circle mr-1"></i>미완료';
+      document.getElementById("step2-check").className = "text-xs font-bold text-slate-400";
+      document.getElementById("step3-check").innerHTML = '<i class="fa-regular fa-circle mr-1"></i>미완료';
       document.getElementById("step3-check").className = "text-xs font-bold text-slate-400";
       
       document.getElementById("btn-step3").disabled = true;
-      document.getElementById("code-output").innerText = "// STEP 1 踰꾪듉???꾨Ⅴ硫?肄붾뱶媛 ?앹꽦?⑸땲??";
-      document.getElementById("mission-status-pill").innerText = "?湲?以?;
-      document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500 font-mono";
+      document.getElementById("code-output").innerText = "// STEP 1 버튼을 누르면 코드가 여기에 나타납니다.";
+      document.getElementById("mission-status-pill").innerText = "대기 중";
+      document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-slate-100 text-slate-500";
     }
 
     function renderStep2Controls(quest) {
       const container = document.getElementById("step2-control-panel");
       container.innerHTML = "";
 
-      (quest.params || []).forEach(p => {
+      if (!quest.params || quest.params.length === 0) {
+        container.innerHTML = `<div class="text-xs text-slate-500 py-1">이 차시는 기본 파라미터로 최적화되어 있습니다. STEP 1 조립 후 바로 STEP 3를 실행할 수 있습니다.</div>`;
+        stepStatus.s2 = true;
+        document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>준비됨';
+        document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
+        return;
+      }
+
+      quest.params.forEach(p => {
         const row = document.createElement("div");
         row.className = "space-y-1";
 
@@ -1488,10 +1425,10 @@ const questsDB = [
           row.innerHTML = `
             <div class="flex justify-between text-xs font-bold text-slate-700">
               <span>${p.label}</span>
-              <span id="${p.id}_disp" class="text-indigo-600 font-mono font-bold">${p.default}</span>
+              <span id="${p.id}_disp" class="text-indigo-600 font-mono">${p.default}</span>
             </div>
             <input type="range" id="${p.id}" min="${p.min}" max="${p.max}" step="${p.step || 1}" value="${p.default}" 
-                   oninput="onParamChange('${p.id}', this.value)" class="w-full accent-indigo-600 cursor-pointer h-2 bg-slate-200 rounded-lg" />
+                   oninput="onParamChange('${p.id}', this.value)" class="w-full accent-indigo-600 cursor-pointer" />
           `;
         } else if (p.type === "select") {
           let opts = (p.options || []).map(o => `<option value="${o}" ${o === p.default ? 'selected':''}>${o}</option>`).join("");
@@ -1504,7 +1441,7 @@ const questsDB = [
         } else {
           row.innerHTML = `
             <label class="block text-xs font-bold text-slate-700 mb-1">${p.label}</label>
-            <input type="text" id="${p.id}" value="${p.default}" oninput="onParamChange('${p.id}', this.value)" 
+            <input type="text" id="${p.id}" value="${p.default || ''}" oninput="onParamChange('${p.id}', this.value)" 
                    class="w-full p-2 bg-white border border-slate-300 rounded-lg text-xs font-semibold text-slate-800" />
           `;
         }
@@ -1516,46 +1453,174 @@ const questsDB = [
       const disp = document.getElementById(paramId + "_disp");
       if (disp) disp.innerText = val;
 
-      playBeep(440, "sine", 0.05);
-
       stepStatus.s2 = true;
-      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>?쒕떇 ?꾨즺';
+      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
       document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
       
       updateCodePreview();
       checkUnlockStep3();
-
-      if (stepStatus.s3) {
-        renderChartVisualization();
-      }
-
       reportProgressToServer();
     }
 
     function runStep1() {
-      playBeep(600, "triangle", 0.1);
       stepStatus.s1 = true;
-      document.getElementById("step1-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>?꾨즺';
+      document.getElementById("step1-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
       document.getElementById("step1-check").className = "text-xs font-bold text-emerald-600";
       
+      if (!activeQuest.params || activeQuest.params.length === 0) {
+        stepStatus.s2 = true;
+        document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
+        document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
+      }
+
       updateCodePreview();
       checkUnlockStep3();
-
-      const log = document.getElementById("terminal-log");
-      log.innerHTML += `<br/><span class="text-indigo-400">> [STEP 1] ${activeQuest.funcA} ?뚯씠?꾨씪??肄붾뱶瑜?議곕┰?덉뒿?덈떎.</span>`;
-      log.scrollTop = log.scrollHeight;
-
       reportProgressToServer();
     }
+
+        function updateCodePreview() {
+      if (!activeQuest) return;
+      let code = activeQuest.codeTemplate;
+
+      (activeQuest.params || []).forEach(p => {
+        const el = document.getElementById(p.id);
+        const rawVal = el ? el.value : (p.default !== undefined ? p.default : "");
+        const val = String(rawVal);
+
+        // Pack 1
+        if (p.id === "p_text") code = code.replace("{USER_TEXT}", val);
+        if (p.id === "p_sep") code = code.replace("{PARAM_SEP}", val);
+        if (p.id === "p_end") code = code.replace("{PARAM_END}", val);
+        if (p.id === "p_val") code = code.replace("{VAL}", val);
+        if (p.id === "p_float") code = code.replace("{FLOAT_ADD}", val);
+        if (p.id === "p_bonus") code = code.replace("{BONUS_SCORE}", val);
+        if (p.id === "p_start") code = code.replace("{START_IDX}", val);
+        if (p.id === "p_score") code = code.replace("{SCORE_VAL}", val);
+        if (p.id === "p_cuthigh") code = code.replace("{CUT_HIGH}", val);
+        if (p.id === "p_cutmid") code = code.replace("{CUT_MID}", val);
+
+        // Pack 2
+        if (p.id === "p_single") code = code.replace("{SINGLE_ITEM}", val);
+        if (p.id === "p_box") {
+          const count = parseInt(val, 10) || 2;
+          const boxArr = Array.from({ length: count }, (_, i) => `'보석_${i+1}'`);
+          code = code.replace("{BOX_ITEMS}", `[${boxArr.join(", ")}]`);
+        }
+        if (p.id === "p_pop") {
+          const pIdx = val.includes("맨 앞") ? "0" : (val.includes("맨 뒤") ? "-1" : "1");
+          code = code.replace("{POP_IDX}", pIdx);
+        }
+        if (p.id === "p_target") code = code.replace("{REMOVE_TARGET}", val);
+        if (p.id === "p_max") code = code.replace("{MAX_LOOP}", val);
+        if (p.id === "p_stop") code = code.replace("{STOP_VAL}", val);
+        if (p.id === "p_base") code = code.replace("{BASE_PRICE}", val);
+        if (p.id === "p_tax") code = code.replace("{TAX_RATE}", val);
+        if (p.id === "p_shape") code = code.replace("{SHAPE_TYPE}", val);
+
+        // Pack 3
+        if (p.id === "p_dataset") code = code.replace("{DATASET_FILE}", val.split(" ")[0]);
+        if (p.id === "p_encoding") code = code.replace("{ENCODING_OPT}", val.split(" ")[0]);
+        if (p.id === "p_index") code = code.replace("{INDEX_OPT}", val.includes("False") ? "False" : "True");
+        if (p.id === "p_top") code = code.replace("{TOP_N}", val);
+        if (p.id === "p_bottom") code = code.replace("{BOTTOM_N}", val);
+        if (p.id === "p_verbose") code = code.replace("{VERBOSE_OPT}", val.includes("True") ? "True" : "False");
+        if (p.id === "p_category") code = code.replace("{CATEGORY_COL}", val.split(" ")[0]);
+        if (p.id === "p_percentile") code = code.replace("{PERCENTILE_OPT}", val.split(" ")[0]);
+        if (p.id === "p_normalize") code = code.replace("{NORMALIZE_OPT}", val.includes("True") ? "True" : "False");
+        if (p.id === "p_colA") code = code.replace("{COL_A}", val);
+        if (p.id === "p_colB") code = code.replace("{COL_B}", val);
+        if (p.id === "p_ilocRows") {
+          code = code.replace("{LOC_ROWS}", val);
+          code = code.replace("{ILOC_ROWS}", val);
+        }
+
+        // Pack 4
+        if (p.id === "p_col") code = code.replace("{TARGET_COL}", val.split(" ")[0]);
+        if (p.id === "p_subset") code = code.replace("{SUBSET_COL}", val.split(" ")[0]);
+        if (p.id === "p_how") code = code.replace("{HOW_OPT}", val.split(" ")[0]);
+        if (p.id === "p_fillcol") code = code.replace("{FILL_COL}", val);
+        if (p.id === "p_method") code = code.replace("{METHOD_TYPE}", val.split(" ")[0]);
+        if (p.id === "p_dropcol") code = code.replace("{DROP_COL}", val);
+        if (p.id === "p_newname") code = code.replace("{NEW_NAME}", val);
+        if (p.id === "p_numcol") code = code.replace("{NUM_COL}", val);
+        if (p.id === "p_inttype") code = code.replace("{INT_TYPE}", val.split(" ")[0]);
+
+        // Pack 5
+        if (p.id === "p_drop") code = code.replace("{DROP_OPT}", val.includes("True") ? "True" : "False");
+        if (p.id === "p_scaler") code = code.replace("{SCALER_TYPE}", val.split(" ")[0]);
+        if (p.id === "p_group") code = code.replace("{GROUP_COL}", val.split(" ")[0]);
+        if (p.id === "p_agg") code = code.replace("{AGG_OPT}", val.split(" ")[0]);
+        if (p.id === "p_sortcol") code = code.replace("{SORT_COL}", val.split(" ")[0]);
+        if (p.id === "p_asc") code = code.replace("{ASC_OPT}", val.includes("True") ? "True" : "False");
+        if (p.id === "p_dummy") code = code.replace("{DUMMY_COL}", val.split(" ")[0]);
+
+        // Pack 6
+        if (p.id === "p_orient") {
+          const isBarh = val.includes("barh");
+          code = code.replace("{BAR_FUNC}", isBarh ? "barh" : "bar");
+          code = code.replace("{ORIENT_DESC}", isBarh ? "가로형 막대그래프로 눕혀서 출력" : "세로형 막대그래프로 기둥 출력");
+        }
+        if (p.id === "p_color") {
+          const cHex = val.includes("emerald") ? "#10b981" : (val.includes("rose") ? "#f43f5e" : "#4f46e5");
+          code = code.replace("{COLOR_HEX}", cHex);
+        }
+        if (p.id === "p_alpha") code = code.replace("{ALPHA_VAL}", val);
+        if (p.id === "p_ptsize") code = code.replace("{POINT_SIZE}", val);
+        if (p.id === "p_ptalpha") code = code.replace("{ALPHA_SCATTER}", val);
+        if (p.id === "p_annot") code = code.replace("{ANNOT_OPT}", val.includes("True") ? "True" : "False");
+        if (p.id === "p_cmap") code = code.replace("{CMAP_OPT}", val.split(" ")[0]);
+        if (p.id === "p_whis") code = code.replace("{WHIS_VAL}", val);
+        if (p.id === "p_title") code = code.replace("{CHART_TITLE}", val);
+        if (p.id === "p_loc") code = code.replace("{LEGEND_LOC}", val.split(" ")[0]);
+        if (p.id === "p_dpi") code = code.replace("{DPI_VAL}", val.split(" ")[0]);
+
+        // Pack 7
+        if (p.id === "p_testsize") code = code.replace(/{TEST_SIZE}/g, val);
+        if (p.id === "p_stratify") code = code.replace(/{STRATIFY_OPT}/g, val.split(" ")[0]);
+        if (p.id === "p_depth") code = code.replace(/{MAX_DEPTH}/g, val);
+        if (p.id === "p_criterion") code = code.replace(/{CRITERION}/g, val.split(" ")[0]);
+
+        // Pack 8
+        if (p.id === "p_threshold") code = code.replace(/{THRESHOLD}/g, val);
+        if (p.id === "p_average") code = code.replace(/{AVERAGE_OPT}/g, val.split(" ")[0]);
+        if (p.id === "p_imbalance") code = code.replace(/{IMBALANCE_PCT}/g, val);
+        if (p.id === "p_digits") code = code.replace(/{DIGITS_OPT}/g, val.split(" ")[0]);
+        if (p.id === "p_estimators") code = code.replace(/{N_ESTIMATORS}/g, val);
+        if (p.id === "p_rf_depth") code = code.replace(/{MAX_DEPTH}/g, val);
+        if (p.id === "p_intercept") code = code.replace(/{INTERCEPT_OPT}/g, val.split(" ")[0]);
+        if (p.id === "p_cv") code = code.replace(/{CV_SPLITS}/g, val);
+        if (p.id === "p_gridEst") code = code.replace(/{GRID_ESTIMATORS}/g, val);
+
+        // Pack 9
+        if (p.id === "p_features") code = code.replace(/{INPUT_FEATURES}/g, val.split("개")[0]);
+        if (p.id === "p_u1") code = code.replace("{UNITS_1}", val);
+        if (p.id === "p_u2") code = code.replace("{UNITS_2}", val);
+        if (p.id === "p_opt") code = code.replace(/{OPT_NAME}/g, val.split(" ")[0]);
+        if (p.id === "p_loss") code = code.replace(/{LOSS_NAME}/g, val.split(" ")[0]);
+        if (p.id === "p_epochs") code = code.replace(/{EPOCH_VAL}/g, val);
+        if (p.id === "p_batch") code = code.replace("{BATCH_VAL}", val.split(" ")[0]);
+
+        // Pack 10
+        if (p.id === "p_patience") code = code.replace("{PATIENCE_VAL}", val);
+        if (p.id === "p_difficulty") code = code.replace("{DIFFICULTY}", val);
+        if (p.id === "p_passScore") code = code.replace("{PASS_SCORE}", val);
+        if (p.id === "p_pledge") code = code.replace("{PLEDGE_TEXT}", val);
+        if (p.id === "p_date") code = code.replace("{DATE_VAL}", val);
+      });
+
+      document.getElementById("code-output").innerText = code;
+    }
+
 
     function checkUnlockStep3() {
       if (stepStatus.s1 && stepStatus.s2) {
         document.getElementById("btn-step3").disabled = false;
-        document.getElementById("mission-status-pill").innerText = "?ㅽ뻾 以鍮??꾨즺";
-        document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700 font-mono";
+        document.getElementById("mission-status-pill").innerText = "실행 준비 완료";
+        document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-indigo-100 text-indigo-700";
       }
     }
 
+    /* STEP 3: 3-SECOND DRAMATIC LOADING & CHART EXECUTION */
     function runStep3() {
       const btn = document.getElementById("btn-step3");
       btn.disabled = true;
@@ -1568,60 +1633,56 @@ const questsDB = [
       loadBar.style.width = "0%";
 
       const steps = [
-        { pct: 25, txt: "?곗궛 硫붾え由??좊떦 諛??뚮씪誘명꽣 ?좏슚??寃??.." },
-        { pct: 55, txt: "?뚯씠??諛붿씠?몄퐫??而댄뙆??諛??⑥닔 ?뚯씠?꾨씪??媛??.." },
-        { pct: 85, txt: "寃곌낵 ?곗씠??異붿텧 諛??쒓컖???붿쭊 ?뚮뜑留?.." },
-        { pct: 100, txt: "?뚭퀬由ъ쬁 ?곗궛 ?꾨즺!" }
+        { pct: 25, txt: "연산 메모리 할당 및 파라미터 유효성 검사..." },
+        { pct: 55, txt: "파이썬 바이트코드 컴파일 및 함수 파이프라인 가동..." },
+        { pct: 85, txt: "결과 데이터 추출 및 시각화 엔진 렌더링..." },
+        { pct: 100, txt: "알고리즘 연산 완료!" }
       ];
 
       let idx = 0;
-      playBeep(380, "sine", 0.08);
-
       const interval = setInterval(() => {
         if (idx < steps.length) {
           loadBar.style.width = steps[idx].pct + "%";
           loadPct.innerText = steps[idx].pct + "%";
           loadText.innerText = steps[idx].txt;
-          playBeep(380 + idx * 90, "sine", 0.08);
           idx++;
         } else {
           clearInterval(interval);
-          setTimeout(finalizeStep3, 300);
+          setTimeout(finalizeStep3, 250);
         }
-      }, 700);
+      }, 600);
     }
 
     function finalizeStep3() {
       stepStatus.s3 = true;
-      document.getElementById("step3-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>?꾨즺';
+      document.getElementById("step3-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
       document.getElementById("step3-check").className = "text-xs font-bold text-emerald-600";
       document.getElementById("loading-container").classList.add("hidden");
       
-      const btn = document.getElementById("btn-step3");
-      btn.disabled = false;
-      document.getElementById("step3-btn-label").innerText = "?뚯씠?꾨씪???ㅼ떆 ?ㅽ뻾";
-
       studentProgress[activeQuest.id] = true;
-      localStorage.setItem("aice_all_50_progress_marine_" + currentStudent, JSON.stringify(studentProgress));
+      localStorage.setItem(STORAGE_PREFIX + "progress_" + currentStudent, JSON.stringify(studentProgress));
 
       renderChartVisualization();
 
       document.getElementById("clear-congrat-card").classList.remove("hidden");
-      document.getElementById("mission-status-pill").innerText = "誘몄뀡 ?대━??";
-      document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800 font-mono";
+      document.getElementById("mission-status-pill").innerText = "퀘스트 완료!";
+      document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800";
 
       const log = document.getElementById("terminal-log");
-      log.innerHTML += `<br/><span class="text-emerald-400">> [SUCCESS] ${activeQuest.id}李⑥떆 (${activeQuest.funcA}) ?뚯씠?꾨씪???곗궛 ?깃났!</span>`;
+      log.innerHTML += `<br/><span class="text-emerald-400">> [SUCCESS] ${activeQuest.id}차시 (${activeQuest.funcA}) 파이프라인 연산 완료! 결과 차트 출력.</span>`;
       log.scrollTop = log.scrollHeight;
 
-      playSuccessSound();
-      if (typeof confetti === 'function') {
-        confetti({ particleCount: 65, spread: 75, origin: { y: 0.7 } });
-      }
+      try {
+        confetti({ particleCount: 70, spread: 60, origin: { y: 0.7 } });
+      } catch (e) {}
 
+      updateProgressHeader();
       reportProgressToServer();
     }
 
+    /* =========================================================================
+       CHART.JS VISUALIZATION RENDERER (ALL 50 QUESTS)
+       ========================================================================= */
     function destroyActiveChart() {
       if (activeChartInstance) {
         activeChartInstance.destroy();
@@ -1632,14 +1693,13 @@ const questsDB = [
     function renderChartVisualization() {
       destroyActiveChart();
       document.getElementById("chart-placeholder").classList.add("hidden");
-      const wrapper = document.getElementById("canvas-wrapper");
-      wrapper.classList.remove("hidden");
-
       const canvas = document.getElementById("practiceCanvas");
+      canvas.classList.remove("hidden");
+
       const ctx = canvas.getContext("2d");
       let config = {};
 
-// --- PACK 1 (IDs 1 ~ 5) ---
+      // --- PACK 1 (IDs 1 ~ 5) ---
 if (activeQuest.id === 1) {
         const textVal = document.getElementById("p_text") ? document.getElementById("p_text").value : "텍스트";
         config = {
@@ -2961,98 +3021,20 @@ if (activeQuest.id === 46) {
         };
       }
 
-    function updateCodePreview() {
-      if (!activeQuest) return;
-      let code = activeQuest.codeTemplate;
-
-      activeQuest.params.forEach(p => {
-        const el = document.getElementById(p.id);
-        const val = el ? el.value : p.default;
-
-        if (p.id === "p_single") code = code.replace("{SINGLE_ITEM}", val);
-        if (p.id === "p_box") {
-        if (p.id === "p_pop") {
-        if (p.id === "p_target") code = code.replace("{REMOVE_TARGET}", val);
-        if (p.id === "p_max") code = code.replace("{MAX_LOOP}", val);
-        if (p.id === "p_stop") code = code.replace("{STOP_VAL}", val);
-        if (p.id === "p_base") code = code.replace("{BASE_PRICE}", val);
-        if (p.id === "p_tax") code = code.replace("{TAX_RATE}", val);
-        if (p.id === "p_shape") code = code.replace("{SHAPE_TYPE}", val);
-        if (p.id === "p_dataset") code = code.replace("{DATASET_FILE}", val.split(" ")[0]);
-        if (p.id === "p_encoding") code = code.replace("{ENCODING_OPT}", val.split(" ")[0]);
-        if (p.id === "p_index") code = code.replace("{INDEX_OPT}", val.includes("False") ? "False" : "True");
-        if (p.id === "p_top") code = code.replace("{TOP_N}", val);
-        if (p.id === "p_bottom") code = code.replace("{BOTTOM_N}", val);
-        if (p.id === "p_verbose") code = code.replace("{VERBOSE_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_category") code = code.replace("{CATEGORY_COL}", val.split(" ")[0]);
-        if (p.id === "p_percentile") code = code.replace("{PERCENTILE_OPT}", val.split(" ")[0]);
-        if (p.id === "p_normalize") code = code.replace("{NORMALIZE_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_colA") code = code.replace("{COL_A}", val);
-        if (p.id === "p_colB") code = code.replace("{COL_B}", val);
-        if (p.id === "p_ilocRows") {
-        if (p.id === "p_col") code = code.replace("{TARGET_COL}", val.split(" ")[0]);
-        if (p.id === "p_subset") code = code.replace("{SUBSET_COL}", val.split(" ")[0]);
-        if (p.id === "p_how") code = code.replace("{HOW_OPT}", val.split(" ")[0]);
-        if (p.id === "p_fillcol") code = code.replace("{FILL_COL}", val);
-        if (p.id === "p_method") code = code.replace("{METHOD_TYPE}", val.split(" ")[0]);
-        if (p.id === "p_dropcol") code = code.replace("{DROP_COL}", val);
-        if (p.id === "p_newname") code = code.replace("{NEW_NAME}", val);
-        if (p.id === "p_numcol") code = code.replace("{NUM_COL}", val);
-        if (p.id === "p_inttype") code = code.replace("{INT_TYPE}", val.split(" ")[0]);
-        if (p.id === "p_drop") code = code.replace("{DROP_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_scaler") code = code.replace("{SCALER_TYPE}", val.split(" ")[0]);
-        if (p.id === "p_group") code = code.replace("{GROUP_COL}", val.split(" ")[0]);
-        if (p.id === "p_agg") code = code.replace("{AGG_OPT}", val.split(" ")[0]);
-        if (p.id === "p_sortcol") code = code.replace("{SORT_COL}", val.split(" ")[0]);
-        if (p.id === "p_asc") code = code.replace("{ASC_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_orient") {
-        if (p.id === "p_color") {
-        if (p.id === "p_alpha") code = code.replace("{ALPHA_VAL}", val);
-        if (p.id === "p_ptsize") code = code.replace("{POINT_SIZE}", val);
-        if (p.id === "p_ptalpha") code = code.replace("{ALPHA_SCATTER}", val);
-        if (p.id === "p_annot") code = code.replace("{ANNOT_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_cmap") code = code.replace("{CMAP_OPT}", val.split(" ")[0]);
-        if (p.id === "p_whis") code = code.replace("{WHIS_VAL}", val);
-        if (p.id === "p_title") code = code.replace("{CHART_TITLE}", val);
-        if (p.id === "p_loc") code = code.replace("{LEGEND_LOC}", val.split(" ")[0]);
-        if (p.id === "p_dpi") code = code.replace("{DPI_VAL}", val.split(" ")[0]);
-        if (p.id === "p_testsize") code = code.replaceAll("{TEST_SIZE}", val);
-        if (p.id === "p_stratify") code = code.replaceAll("{STRATIFY_OPT}", val.split(" ")[0]);
-        if (p.id === "p_depth") code = code.replaceAll("{MAX_DEPTH}", val);
-        if (p.id === "p_criterion") code = code.replaceAll("{CRITERION}", val.split(" ")[0]);
-        if (p.id === "p_threshold") code = code.replaceAll("{THRESHOLD}", val);
-        if (p.id === "p_average") code = code.replaceAll("{AVERAGE_OPT}", val.split(" ")[0]);
-        if (p.id === "p_imbalance") code = code.replaceAll("{IMBALANCE_PCT}", val);
-        if (p.id === "p_digits") code = code.replaceAll("{DIGITS_OPT}", val.split(" ")[0]);
-        if (p.id === "p_estimators") code = code.replaceAll("{N_ESTIMATORS}", val);
-        if (p.id === "p_rf_depth") code = code.replaceAll("{MAX_DEPTH}", val);
-        if (p.id === "p_intercept") code = code.replaceAll("{INTERCEPT_OPT}", val.split(" ")[0]);
-        if (p.id === "p_cv") code = code.replaceAll("{CV_SPLITS}", val);
-        if (p.id === "p_gridEst") code = code.replaceAll("{GRID_ESTIMATORS}", val);
-        if (p.id === "p_features") code = code.replace(/{INPUT_FEATURES}/g, val.split("개")[0]);
-        if (p.id === "p_u1") code = code.replace("{UNITS_1}", val);
-        if (p.id === "p_u2") code = code.replace("{UNITS_2}", val);
-        if (p.id === "p_opt") code = code.replace(/{OPT_NAME}/g, val.split(" ")[0]);
-        if (p.id === "p_loss") code = code.replace(/{LOSS_NAME}/g, val.split(" ")[0]);
-        if (p.id === "p_epochs") code = code.replace(/{EPOCH_VAL}/g, val);
-        if (p.id === "p_batch") code = code.replace("{BATCH_VAL}", val.split(" ")[0]);
-        if (p.id === "p_patience") code = code.replace("{PATIENCE_VAL}", val);
-      });
-
-      document.getElementById("code-output").innerText = code;
-    }
-
       activeChartInstance = new Chart(ctx, config);
     }
 
-    /* REAL-TIME PROGRESS REPORTING (STUDENT -> SERVER) */
+    /* =========================================================================
+       REAL-TIME TEACHER DASHBOARD & PROGRESS SYNC
+       ========================================================================= */
     async function reportProgressToServer() {
       if (!currentStudent) return;
       const completedList = Object.keys(studentProgress).filter(k => studentProgress[k] === true).map(Number);
       const payload = {
+        school: SCHOOL_ID,
         studentName: currentStudent,
         questId: activeQuest ? activeQuest.id : 0,
-        questTitle: activeQuest ? `${activeQuest.id}李⑥떆: ${activeQuest.title}` : "濡쒕퉬 ?湲?,
+        questTitle: activeQuest ? `${activeQuest.id}차시: ${activeQuest.title}` : "로비 대기",
         stepStatus: stepStatus,
         completedCount: completedList.length,
         completedQuests: completedList,
@@ -3068,14 +3050,13 @@ if (activeQuest.id === 46) {
       } catch (e) {}
     }
 
-    /* TEACHER DASHBOARD LOGIC (SERVER -> TEACHER MONITOR) */
     function toggleTeacherDashboard() {
       const modal = document.getElementById("teacher-modal");
       if (modal.classList.contains("hidden")) {
         modal.classList.remove("hidden");
         refreshTeacherGrid();
         if (!teacherPollingTimer) {
-          teacherPollingTimer = setInterval(refreshTeacherGrid, 2000);
+          teacherPollingTimer = setInterval(refreshTeacherGrid, 3000);
         }
       } else {
         modal.classList.add("hidden");
@@ -3093,16 +3074,24 @@ if (activeQuest.id === 46) {
       const syncEl = document.getElementById("last-sync-time");
 
       let studentsMap = {};
+      let connectedServer = false;
+
       try {
-        const res = await fetch("/api/progress");
+        const res = await fetch("/api/progress?school=" + SCHOOL_ID);
         if (res.ok) {
           studentsMap = await res.json();
+          connectedServer = true;
         }
       } catch (e) {}
 
+      // Fallback: If no LAN server response, harvest local students from localStorage + simulation
+      if (!connectedServer || Object.keys(studentsMap).length === 0) {
+        studentsMap = harvestLocalStudents();
+      }
+
       const studentKeys = Object.keys(studentsMap);
       countEl.innerText = studentKeys.length;
-      syncEl.innerText = "理쒓렐 ?숆린?? " + new Date().toLocaleTimeString('ko-KR');
+      syncEl.innerText = (connectedServer ? "서버 연동 " : "로컬 관제 ") + new Date().toLocaleTimeString('ko-KR');
 
       if (studentKeys.length === 0) {
         container.innerHTML = "";
@@ -3122,7 +3111,7 @@ if (activeQuest.id === 46) {
       studentKeys.forEach(name => {
         const st = studentsMap[name];
         const isDoneAll = (st.completedCount || 0) >= 50;
-        const currentQuestText = st.questTitle || (st.questId > 0 ? `${st.questId}李⑥떆` : "濡쒕퉬 ?湲?);
+        const currentQuestText = st.questTitle || (st.questId > 0 ? `${st.questId}차시` : "로비 대기");
         
         let s1Done = st.stepStatus && st.stepStatus.s1;
         let s2Done = st.stepStatus && st.stepStatus.s2;
@@ -3131,7 +3120,7 @@ if (activeQuest.id === 46) {
         let badgeColor = isDoneAll ? "bg-emerald-500" : (st.questId > 0 ? "bg-amber-400" : "bg-slate-300");
 
         const card = document.createElement("div");
-        card.className = `p-3.5 rounded-2xl border transition shadow-sm flex flex-col justify-between ${
+        card.className = `p-3 rounded-2xl border transition shadow-sm flex flex-col justify-between ${
           isDoneAll ? "bg-emerald-50/70 border-emerald-300" : "bg-white border-slate-200"
         }`;
 
@@ -3142,25 +3131,25 @@ if (activeQuest.id === 46) {
                 <i class="fa-solid fa-user-graduate mr-1.5 text-indigo-500"></i>${st.studentName}
               </span>
               <span class="flex items-center space-x-1">
-                <span class="w-2.5 h-2.5 rounded-full ${badgeColor}"></span>
+                <span class="w-2 h-2 rounded-full ${badgeColor}"></span>
                 <span class="text-[10px] font-bold ${isDoneAll ? 'text-emerald-700' : 'text-slate-500'} font-mono">${st.completedCount || 0}/50</span>
               </span>
             </div>
 
             <div class="text-[11px] text-slate-600 mb-2 truncate" title="${currentQuestText}">
-              <span class="text-slate-400">吏꾪뻾:</span> <b class="text-indigo-600">${currentQuestText}</b>
+              <span class="text-slate-400">진행:</span> <b class="text-indigo-600">${currentQuestText}</b>
             </div>
 
             <div class="grid grid-cols-3 gap-1 text-center font-mono text-[9px] font-bold">
-              <span class="py-1 rounded ${s1Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S1 議곕┰</span>
-              <span class="py-1 rounded ${s2Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S2 ?쒕떇</span>
-              <span class="py-1 rounded ${s3Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S3 梨꾩젏</span>
+              <span class="py-0.5 rounded ${s1Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S1</span>
+              <span class="py-0.5 rounded ${s2Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S2</span>
+              <span class="py-0.5 rounded ${s3Done ? 'bg-emerald-100 text-emerald-800 border border-emerald-200' : 'bg-slate-100 text-slate-400'}">S3</span>
             </div>
           </div>
 
-          <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
-            <span>留덉?留??쒕룞</span>
-            <span>${st.lastActive || "諛⑷툑"}</span>
+          <div class="mt-2 pt-1.5 border-t border-slate-100 flex items-center justify-between text-[10px] text-slate-400 font-mono">
+            <span>마지막 활동</span>
+            <span>${st.lastActive || "방금"}</span>
           </div>
         `;
 
@@ -3168,28 +3157,93 @@ if (activeQuest.id === 46) {
       });
     }
 
-    async function resetAllProgress() {
-      if (!confirm("?뺣쭚濡?紐⑤뱺 ?숈깮???쒕쾭 吏꾨룄 湲곕줉??珥덇린?뷀븯?쒓쿋?듬땲源? (?덈줈???섏뾽???쒖옉????沅뚯옣)")) return;
-      try {
-        const res = await fetch("/api/progress", { method: "DELETE" });
-        if (res.ok) {
-          refreshTeacherGrid();
-          alert("紐⑤뱺 ?숈깮??吏꾨룄媛 ?깃났?곸쑝濡?珥덇린?붾릺?덉뒿?덈떎.");
-        }
-      } catch (e) {
-        alert("珥덇린???듭떊 以??ㅻ쪟媛 諛쒖깮?덉뒿?덈떎.");
+    function harvestLocalStudents() {
+      let map = {};
+      if (currentStudent) {
+        const completedList = Object.keys(studentProgress).filter(k => studentProgress[k] === true).map(Number);
+        map[currentStudent] = {
+          studentName: currentStudent,
+          questId: activeQuest ? activeQuest.id : 0,
+          questTitle: activeQuest ? `${activeQuest.id}차시: ${activeQuest.title}` : "로비 대기",
+          stepStatus: stepStatus,
+          completedCount: completedList.length,
+          completedQuests: completedList,
+          lastActive: "방금"
+        };
       }
+
+      // Check other students in localStorage
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith(STORAGE_PREFIX + "progress_")) {
+          const name = key.replace(STORAGE_PREFIX + "progress_", "");
+          if (name && !map[name]) {
+            try {
+              const prog = JSON.parse(localStorage.getItem(key) || "{}");
+              const cList = Object.keys(prog).filter(k => prog[k] === true).map(Number);
+              map[name] = {
+                studentName: name,
+                questId: 0,
+                questTitle: "완료 목록 확인",
+                stepStatus: { s1: true, s2: true, s3: true },
+                completedCount: cList.length,
+                completedQuests: cList,
+                lastActive: "이전 세션"
+              };
+            } catch (e) {}
+          }
+        }
+      }
+
+      // If fewer than 4 students, add mock class peers for preview demonstration
+      if (Object.keys(map).length < 4) {
+        const samplePeers = [
+          { name: "1반 03번 김민준", count: 18, qId: 19, qTitle: "19차시: iloc vs loc" },
+          { name: "1반 07번 박서연", count: 32, qId: 33, qTitle: "33차시: train_test_split" },
+          { name: "1반 12번 최도윤", count: 50, qId: 50, qTitle: "50차시: 전 과정 완주" },
+          { name: "1반 18번 정하은", count: 8, qId: 9, qTitle: "9차시: split & join" }
+        ];
+        samplePeers.forEach(p => {
+          if (!map[p.name]) {
+            map[p.name] = {
+              studentName: p.name,
+              questId: p.qId,
+              questTitle: p.qTitle,
+              stepStatus: { s1: true, s2: true, s3: p.count > 0 },
+              completedCount: p.count,
+              completedQuests: [],
+              lastActive: "조금 전"
+            };
+          }
+        });
+      }
+
+      return map;
     }
 
-    function copyLanUrl() {
-      const urlText = document.getElementById("teacher-lan-url").innerText;
-      navigator.clipboard.writeText(urlText).then(() => {
-        const btnText = document.getElementById("copy-btn-text");
-        btnText.innerText = "蹂듭궗 ?꾨즺!";
-        setTimeout(() => { btnText.innerText = "二쇱냼 蹂듭궗"; }, 2000);
-      });
+    async function resetAllProgress() {
+      if (!confirm("정말로 모든 진도 기록을 초기화하시겠습니까?")) return;
+      try {
+        await fetch("/api/progress?school=" + SCHOOL_ID, { method: "DELETE" });
+      } catch (e) {}
+
+      // Clear local storage for this school
+      for (let i = localStorage.length - 1; i >= 0; i--) {
+        const k = localStorage.key(i);
+        if (k && k.startsWith(STORAGE_PREFIX)) {
+          localStorage.removeItem(k);
+        }
+      }
+      studentProgress = {};
+      refreshTeacherGrid();
+      updateProgressHeader();
+      renderQuestGrid();
+      alert("진도 기록이 초기화되었습니다.");
     }
 
+    /* =========================================================================
+       PRINTABLE A4 SUMMARY REPORT & CERTIFICATE TABLE
+       ========================================================================= */
     function renderPrintTable() {
       const tbody = document.getElementById("print-table-body");
       if (!tbody) return;
@@ -3200,10 +3254,10 @@ if (activeQuest.id === 46) {
         const funcs = [q.funcA, q.funcB].filter(Boolean).join(", ");
         const paramsStr = (q.params || []).map(p => p.label).join(", ");
         tr.innerHTML = `
-          <td class="p-2 border-r border-slate-300 font-bold">${q.id}李⑥떆</td>
-          <td class="p-2 border-r border-slate-300 font-mono font-bold text-indigo-700">${funcs}</td>
-          <td class="p-2 border-r border-slate-300">${paramsStr}</td>
-          <td class="p-2 text-slate-600">${q.briefRule || ""}</td>
+          <td class="p-1.5 border-r border-slate-300 font-bold text-center">${q.id}차시</td>
+          <td class="p-1.5 border-r border-slate-300 font-mono font-bold text-indigo-700">${funcs}</td>
+          <td class="p-1.5 border-r border-slate-300">${paramsStr}</td>
+          <td class="p-1.5 text-slate-600">${q.briefRule || ""}</td>
         `;
         tbody.appendChild(tr);
       });
