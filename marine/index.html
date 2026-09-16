@@ -334,14 +334,14 @@
         briefEnglish: "• print: 화면에 인쇄하다 / 출력하다<br/>• type: 자료형의 종류(정수, 소수, 문자열)",
         briefRule: "AICE 실기에서는 출력 결과를 확인할 때 print()와 함께 데이터의 타입을 type()으로 찍어보는 디버깅 코드가 필수입니다.",
         step1Label: "print() 기본 문장 생성",
-        codeTemplate: "message = '{USER_TEXT}'\nprint(message, sep='{PARAM_SEP}', end='{PARAM_END}')\nprint('자료형 확인:', type(message))",
+        codeTemplate: "name = '{USER_TEXT}'\nprint('도전자:', name, sep='{PARAM_SEP}', end='{PARAM_END}')\nprint('자료형 확인:', type(name))",
         params: [
           { id: "p_text", label: "출력할 내 닉네임/메시지", type: "text", default: "AI 도전자 홍길동" },
-          { id: "p_sep", label: "단어 구분 기호 (sep)", type: "select", options: ["-", "★", " / ", " : "], default: "-" },
-          { id: "p_end", label: "문장 끝 기호 (end)", type: "select", options: ["!\\n", " 完\\n", " ^^\\n"], default: "!\\n" }
+          { id: "p_sep", label: "단어 구분 기호 (sep)", type: "select", options: ["-", "★", " : ", " / "], default: "-" },
+          { id: "p_end", label: "문장 끝 기호 (end)", type: "select", options: ["!\\n", " 完\\n", " ^^\\n", "\\n"], default: "!\\n" }
         ],
         chartType: "bar",
-        chartTitle: "문자열 길이 및 파라미터 바이트 분석"
+        chartTitle: "1차시: 문자열 길이 및 파라미터 바이트 분석"
       },
       {
         id: 2,
@@ -1401,6 +1401,27 @@
         }
         container.appendChild(row);
       });
+
+      if (quest.params && quest.params.length > 0) {
+        const btnRow = document.createElement("div");
+        btnRow.className = "pt-2";
+        btnRow.innerHTML = `
+          <button onclick="applyParamsAndReady()" class="w-full py-2 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 text-xs font-bold rounded-lg border border-indigo-200 transition flex items-center justify-center space-x-1.5">
+            <i class="fa-solid fa-check"></i>
+            <span>파라미터 적용 및 STEP 3 활성화</span>
+          </button>
+        `;
+        container.appendChild(btnRow);
+      }
+    }
+
+    function applyParamsAndReady() {
+      stepStatus.s2 = true;
+      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>적용 완료';
+      document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
+      updateCodePreview();
+      checkUnlockStep3();
+      reportProgressToServer();
     }
 
     function onParamChange(paramId, val) {
@@ -1408,7 +1429,7 @@
       if (disp) disp.innerText = val;
 
       stepStatus.s2 = true;
-      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
+      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>파라미터 튜닝 완료';
       document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
       
       updateCodePreview();
@@ -1421,11 +1442,10 @@
       document.getElementById("step1-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
       document.getElementById("step1-check").className = "text-xs font-bold text-emerald-600";
       
-      if (!activeQuest.params || activeQuest.params.length === 0) {
-        stepStatus.s2 = true;
-        document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>완료';
-        document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
-      }
+      // Auto-ready STEP 2 with current parameters so STEP 3 is immediately available
+      stepStatus.s2 = true;
+      document.getElementById("step2-check").innerHTML = '<i class="fa-solid fa-circle-check mr-1 text-emerald-500"></i>기본값 세팅됨';
+      document.getElementById("step2-check").className = "text-xs font-bold text-emerald-600";
 
       updateCodePreview();
       checkUnlockStep3();
@@ -1444,7 +1464,10 @@
         // Pack 1
         if (p.id === "p_text") code = code.replace("{USER_TEXT}", val);
         if (p.id === "p_sep") code = code.replace("{PARAM_SEP}", val);
-        if (p.id === "p_end") code = code.replace("{PARAM_END}", val);
+        if (p.id === "p_end") {
+          const safeEnd = val.replace(/\n/g, "\\n");
+          code = code.replace("{PARAM_END}", safeEnd);
+        }
         if (p.id === "p_val") code = code.replace("{VAL}", val);
         if (p.id === "p_float") code = code.replace("{FLOAT_ADD}", val);
         if (p.id === "p_bonus") code = code.replace("{BONUS_SCORE}", val);
@@ -1623,7 +1646,20 @@
       document.getElementById("mission-status-pill").className = "px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800";
 
       const log = document.getElementById("terminal-log");
-      log.innerHTML += `<br/><span class="text-emerald-400">> [SUCCESS] ${activeQuest.id}차시 (${activeQuest.funcA}) 파이프라인 연산 완료! 결과 차트 출력.</span>`;
+      if (activeQuest.id === 1) {
+        const textVal = document.getElementById("p_text") ? document.getElementById("p_text").value : "AI 도전자 홍길동";
+        const sepVal = document.getElementById("p_sep") ? document.getElementById("p_sep").value : "-";
+        const endValRaw = document.getElementById("p_end") ? document.getElementById("p_end").value : "!\n";
+        const endDisplay = endValRaw.replace(/\\n/g, "").replace(/\n/g, "");
+        
+        log.innerHTML = `<div class="text-slate-400">// Python 3.10 Runtime Output:</div>
+<div class="text-amber-300 font-mono font-bold mt-1">> python main.py</div>
+<div class="text-white font-mono mt-0.5">도전자:${sepVal}${textVal}${endDisplay}</div>
+<div class="text-white font-mono">자료형 확인: &lt;class 'str'&gt;</div>
+<div class="text-emerald-400 mt-2 font-mono">> [SUCCESS] 1차시 (print() & type()) 파이프라인 연산 완료! 결과 차트 출력.</div>`;
+      } else {
+        log.innerHTML += `<br/><span class="text-emerald-400">> [SUCCESS] ${activeQuest.id}차시 (${activeQuest.funcA}) 파이프라인 연산 완료! 결과 차트 출력.</span>`;
+      }
       log.scrollTop = log.scrollHeight;
 
       try {
@@ -1655,19 +1691,32 @@
 
       // --- PACK 1 (IDs 1 ~ 5) ---
 if (activeQuest.id === 1) {
-        const textVal = document.getElementById("p_text") ? document.getElementById("p_text").value : "텍스트";
+        const textVal = document.getElementById("p_text") ? document.getElementById("p_text").value : "AI 도전자 홍길동";
+        const sepVal = document.getElementById("p_sep") ? document.getElementById("p_sep").value : "-";
+        const endVal = document.getElementById("p_end") ? document.getElementById("p_end").value : "!";
+        const cleanEnd = endVal.replace(/\\n/g, "").replace(/\n/g, "");
         config = {
           type: "bar",
           data: {
-            labels: ["문자열 길이", "바이트 용량", "sep 길이", "end 길이"],
+            labels: [`닉네임 길이 (${textVal.length}자)`, `메모리 크기 (${textVal.length * 2}B)`, `구분자 길이 (${sepVal.length}자)`, `종결자 길이 (${cleanEnd.length}자)`],
             datasets: [{
-              label: "1차시 텍스트 메트릭",
-              data: [textVal.length, textVal.length * 2, 1, 2],
+              label: "1차시 문자열 데이터 메트릭",
+              data: [textVal.length, textVal.length * 2, sepVal.length, cleanEnd.length],
               backgroundColor: ["#4f46e5", "#6366f1", "#818cf8", "#a5b4fc"],
               borderRadius: 8
             }]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { display: false },
+              title: { display: true, text: `1차시: "${textVal}" 문자열 및 출력 파라미터 규격 분석` }
+            },
+            scales: {
+              y: { beginAtZero: true }
+            }
+          }
         };
       } else if (activeQuest.id === 2) {
         const raw = parseFloat(document.getElementById("p_val")?.value || "85");
