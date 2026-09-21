@@ -120,7 +120,7 @@ function numberRow(s, items, y) {
     s.addShape("ellipse", { x, y, w: 0.45, h: 0.45, fill: { color: C.indigo }, line: { color: C.indigo } });
     T(s, String(i + 1), { x, y, w: 0.45, h: 0.45, fontSize: 14, bold: true, color: C.white, align: "center", valign: "middle" });
     T(s, it.t, { x: x + 0.6, y, w: w - 0.6, h: 0.45, fontSize: 14, bold: true, color: C.ink, valign: "middle" });
-    T(s, it.d, { x, y: y + 0.55, w, h: 1.2, fontSize: 12, color: C.ink2, valign: "top", lineSpacingMultiple: 1.2 });
+    T(s, it.d, { x, y: y + 0.55, w, h: 1.55, fontSize: 12, color: C.ink2, valign: "top", lineSpacingMultiple: 1.2 });
   });
 }
 function quiz(s, qs) {
@@ -187,9 +187,9 @@ function deck6() {
 
   s = p.addSlide(); head(s, "실습 — 앱 6차시 (10분)", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
-    { t: "STEP 1 조립", d: "append 로 넣을 단일 템 하나, extend 로 풀 박스 알맹이 수를 고르고 코드를 조립한다." },
-    { t: "STEP 2 예측", d: "실행 전에 '총 슬롯 개수' 를 먼저 말해 보기. 2 + 1 + 박스 수." },
-    { t: "STEP 3 확인", d: "차트의 세 막대(기본 → append 후 → extend 후)가 예측과 같은지 본다." },
+    { t: "STEP 1 코드 소환", d: "「append & extend 리스트 조립」 버튼을 누르면 코드가 나타난다. 다섯 줄을 소리 내어 읽는다." },
+    { t: "STEP 2 파라미터 적용", d: "append 로 넣을 단일 템(전설의활·마법지팡이·방패)과 extend 박스 알맹이 수(1~4)를 고르고 「파라미터 적용」. 코드가 바뀌는 걸 본다." },
+    { t: "STEP 3 실행 · 차트", d: "「파이프라인 실행」 → 막대 셋: 기본 2 → append 후 3 → extend 후 3+박스 수. 누르기 전에 마지막 숫자를 먼저 말해 보기." },
   ], 1.6);
   card(s, 0.5, 3.3, 9, 1.8, { tone: "amber", title: "도전 과제", body: "박스를 4개로 올렸을 때 extend 대신 append 를 쓰면 슬롯이 몇 개가 될까?\n(답: 4개 — 박스 하나가 원소 1개로 들어간다) 짝과 답을 맞춰 보세요." });
 
@@ -258,9 +258,9 @@ function deck7() {
 
   s = p.addSlide(); head(s, "실습 — 앱 7차시 (10분) · 확인 퀴즈", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
-    { t: "STEP 1 조립", d: "pop 인덱스(맨 앞·맨 뒤·세 번째)와 remove 대상(어뷰저·유저B)을 골라 조립." },
-    { t: "STEP 2 예측", d: "실행 전에 남는 큐를 종이에 적어 보기." },
-    { t: "STEP 3 확인", d: "차트에서 주황 = pop 으로 꺼냄, 빨강 = remove 로 삭제." },
+    { t: "STEP 1 코드 소환", d: "「pop & remove 삭제 파이프라인 조립」 버튼 → 큐 5명에서 pop 한 명, remove 한 명 하는 코드가 나타난다." },
+    { t: "STEP 2 파라미터 적용", d: "pop 인덱스(맨 앞·맨 뒤·세 번째)와 remove 대상(어뷰저·유저B)을 고르고 「파라미터 적용」. 남을 큐를 먼저 종이에 적는다." },
+    { t: "STEP 3 실행 · 차트", d: "「파이프라인 실행」 → 다섯 막대 중 주황 = pop 으로 꺼낸 사람, 빨강 = remove 로 지운 사람. 종이와 맞는지 확인." },
   ], 1.5);
   [{ q: "lst = [5, 6, 7]; v = lst.pop(0); v 와 lst 는?", a: "답: v = 5, lst = [6, 7]" }, { q: "lst = [1, 2, 1]; lst.remove(1); lst 는?", a: "답: [2, 1] — 맨 앞 하나만 지운다" }].forEach((q, k) => {
     const y = 3.35 + k * 0.9;
@@ -321,9 +321,9 @@ function deck8() {
 
   s = p.addSlide(); head(s, "실습 — 앱 8차시 (10분) · 확인 퀴즈", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
-    { t: "STEP 1 조립", d: "최대 반복 수(max_loop)와 탈출 기준(break)을 슬라이더로 정한다." },
-    { t: "STEP 2 예측", d: "'정상 학습 중' 이 몇 줄 찍힐까? (break 기준 − 1)" },
-    { t: "STEP 3 확인", d: "차트의 빨간 막대 = break 가 걸린 회차. 점선 = 원래 계획." },
+    { t: "STEP 1 코드 소환", d: "「반복문 & 탈출 조건식 조립」 버튼 → max_epoch 와 stop_point 가 든 for 문이 나타난다." },
+    { t: "STEP 2 파라미터 적용", d: "최대 반복 수(10~20)와 조기 탈출 기준(4~12)을 슬라이더로 정하고 「파라미터 적용」. '정상 학습 중' 이 몇 줄 찍힐지 먼저 말한다 (기준 − 1)." },
+    { t: "STEP 3 실행 · 차트", d: "「파이프라인 실행」 → 점선 = 원래 계획한 횟수, 파란 막대 = 실제 돈 횟수, 빨간 막대 = break 가 걸린 회차." },
   ], 1.5);
   [{ q: "for i in range(3): print(i) 의 출력은?", a: "답: 0 1 2 — 0부터, 3은 빠진다" }, { q: "break 와 continue 중 '이번 바퀴만 건너뛰기' 는?", a: "답: continue" }].forEach((q, k) => {
     const y = 3.35 + k * 0.9;
@@ -385,9 +385,9 @@ function deck9() {
 
   s = p.addSlide(); head(s, "실습 — 앱 9차시 (10분) · 확인 퀴즈", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
-    { t: "STEP 1 조립", d: "기본 원가(price)와 세율(tax_rate)을 고르고 calculate_price 를 조립한다." },
-    { t: "STEP 2 예측", d: "세율 0.15, 원가 50000이면 최종 금액은? 실행 전에 계산." },
-    { t: "STEP 3 확인", d: "차트의 원가 + 세금 = 최종 결제액이 계산과 같은지 본다." },
+    { t: "STEP 1 코드 소환", d: "「def & return 커스텀 계산기 조립」 버튼 → calculate_price 함수 정의와 호출 코드가 나타난다." },
+    { t: "STEP 2 파라미터 적용", d: "기본 원가(10000·25000·50000)와 세율(0.05~0.20)을 고르고 「파라미터 적용」. 최종 금액을 먼저 암산한다 (원가 × (1+세율))." },
+    { t: "STEP 3 실행 · 차트", d: "「파이프라인 실행」 → 원가 + 세금 = 최종 결제액 막대. 암산과 같은지, 세율을 바꾸면 세금 막대만 변하는지 본다." },
   ], 1.5);
   [{ q: "def f(): x = 1  →  print(f()) 의 출력은?", a: "답: None — return 이 없다" }, { q: "return a, b 를 받을 때 변수는 몇 개?", a: "답: 2개 (또는 튜플 하나로)" }].forEach((q, k) => {
     const y = 3.35 + k * 0.9;
