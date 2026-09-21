@@ -391,10 +391,10 @@ S[5] = {
       outBlock(s, "최종 판정 티어: GOLD (우수)", 0.5, 4.25, 5.6, 0.8, 11);
       card(s, 6.35, 1.5, 3.15, 3.55, { tone: "green", title: "기억할 것", body: "• 위에서부터 차례로 검사, 처음 참인 곳 하나만 실행\n• elif 는 몇 개든\n• else 는 '나머지 전부', 조건 없음\n• 85 는 90 미만이라 두 번째로" }); },
     (s) => { head(s, "순서가 답을 바꾼다", 5);
-      codeBlock(s, "score = 95\nif score >= 70:       # 먼저 걸린다\n    tier = 'GOLD'\nelif score >= 90:     # 여기 못 온다\n    tier = 'CHALLENGER'\nprint(tier)           # GOLD  ← 틀림", 0.5, 1.5, 4.35, 2.2, 12);
-      codeBlock(s, "score = 95\nif score >= 90:       # 높은 기준 먼저\n    tier = 'CHALLENGER'\nelif score >= 70:\n    tier = 'GOLD'\nprint(tier)           # CHALLENGER", 5.15, 1.5, 4.35, 2.2, 12);
-      card(s, 0.5, 3.9, 4.35, 1.2, { tone: "red", title: "낮은 기준이 먼저 → 다 거기서 멈춤", body: null });
-      card(s, 5.15, 3.9, 4.35, 1.2, { tone: "green", title: "높은 기준부터 내려온다", body: null }); },
+      codeBlock(s, "score = 95\nif score >= 70:       # 먼저 걸린다\n    tier = 'GOLD'\nelif score >= 90:     # 여기 못 온다\n    tier = 'CHALLENGER'\nprint(tier)           # GOLD  ← 틀림", 0.5, 1.5, 4.35, 2.7, 12.5);
+      codeBlock(s, "score = 95\nif score >= 90:       # 높은 기준 먼저\n    tier = 'CHALLENGER'\nelif score >= 70:\n    tier = 'GOLD'\nprint(tier)           # CHALLENGER", 5.15, 1.5, 4.35, 2.7, 12.5);
+      card(s, 0.5, 4.35, 4.35, 0.75, { tone: "red", title: "낮은 기준이 먼저 → 다 거기서 멈춤", body: null });
+      card(s, 5.15, 4.35, 4.35, 0.75, { tone: "green", title: "높은 기준부터 내려온다", body: null }); },
     (s) => { head(s, "흔한 실수 3가지", 5);
       numberRow(s, [
         { t: "= 과 == 혼동", d: "if score = 90: 은 SyntaxError. 비교는 == 두 개. 하나는 '넣어라'." },
