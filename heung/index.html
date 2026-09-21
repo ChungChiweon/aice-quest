@@ -385,13 +385,13 @@
         briefEnglish: "• range: 정해진 시작과 끝 사이 숫자 생성<br/>• enumerate: 번호표(순번)를 1씩 증가시키며 나열하다",
         briefRule: "딥러닝 에포크(Epoch) 반복문이나 데이터 인덱스 매핑 시 range(start, stop, step) 파라미터가 핵심입니다.",
         step1Label: "range & enumerate 루프 조립",
-        codeTemplate: "items = ['롤', '배그', '발로란트', '오버워치']\nfor idx, item in enumerate(items, start={START_IDX}):\n    print(f'{idx}위 종목: {item}')",
+        codeTemplate: "items = ['롤', '배그', '발로란트', '오버워치']\n# enumerate: 순번은 start부터 항상 1씩 늘어난다\nfor idx, item in enumerate(items, start={START_IDX}):\n    print(f'{idx}위 종목: {item}')\n\n# range: 시작·끝·간격(step)을 내가 정한다\nfor n in range({START_IDX}, {START_IDX} + 4 * {STEP}, {STEP}):\n    print('range 값:', n)",
         params: [
           { id: "p_start", label: "순번 시작 번호표 (start)", type: "select", options: ["1", "0", "10"], default: "1" },
           { id: "p_step", label: "반복 증가 간격 (step)", type: "slider", min: 1, max: 3, step: 1, default: 1 }
         ],
         chartType: "bar",
-        chartTitle: "순번별 가중치 지수 시각화"
+        chartTitle: "4차시: enumerate 순번(1씩) vs range 값(step씩)"
       },
       {
         id: 5,
@@ -1471,7 +1471,8 @@
         if (p.id === "p_val") code = code.replace("{VAL}", val);
         if (p.id === "p_float") code = code.replace("{FLOAT_ADD}", val);
         if (p.id === "p_bonus") code = code.replace("{BONUS_SCORE}", val);
-        if (p.id === "p_start") code = code.replace("{START_IDX}", val);
+        if (p.id === "p_start") code = code.split("{START_IDX}").join(val);
+        if (p.id === "p_step") code = code.split("{STEP}").join(val);
         if (p.id === "p_score") code = code.replace("{SCORE_VAL}", val);
         if (p.id === "p_cuthigh") code = code.replace("{CUT_HIGH}", val);
         if (p.id === "p_cutmid") code = code.replace("{CUT_MID}", val);
@@ -1749,19 +1750,21 @@ if (activeQuest.id === 1) {
           options: { responsive: true, maintainAspectRatio: false }
         };
       } else if (activeQuest.id === 4) {
+        // 차트는 코드가 실제로 찍는 값을 그린다. enumerate 순번은 start부터 1씩, range 값은 start부터 step씩.
         const start = parseInt(document.getElementById("p_start")?.value || "1", 10);
+        const step = parseInt(document.getElementById("p_step")?.value || "1", 10);
+        const idx = [0, 1, 2, 3].map((i) => start + i);
+        const rng = [0, 1, 2, 3].map((i) => start + i * step);
         config = {
           type: "bar",
           data: {
             labels: ["롤", "배그", "발로란트", "옵치"],
-            datasets: [{
-              label: "순번별 가중치",
-              data: [start * 10, (start + 1) * 10, (start + 2) * 10, (start + 3) * 10],
-              backgroundColor: ["#4f46e5", "#6366f1", "#818cf8", "#cbd5e1"],
-              borderRadius: 8
-            }]
+            datasets: [
+              { label: `enumerate 순번 idx (start=${start}, 1씩 증가)`, data: idx, backgroundColor: "#4f46e5", borderRadius: 8 },
+              { label: `range 값 n (start=${start}, step=${step})`, data: rng, backgroundColor: "#a5b4fc", borderRadius: 8 }
+            ]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
         };
       } else if (activeQuest.id === 5) { const sc = parseInt(document.getElementById("p_score")?.value || "85", 10);
         config = {
