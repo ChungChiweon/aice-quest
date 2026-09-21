@@ -178,11 +178,11 @@ function deck6() {
     { t: "extend 에 문자열", d: "names.extend('철수') → '철', '수' 로 쪼개짐. 이름 하나는 append('철수')." },
     { t: "결과를 변수에 받기", d: "x = a.append(1) 은 x 가 None. 두 함수 모두 리스트를 '제자리에서' 바꾸고 아무것도 돌려주지 않는다." },
   ], 1.6);
-  codeBlock(s, "x = scores.append(90)\nprint(x)   # None  ← 이미 scores 가 바뀌었다", 0.5, 3.75, 9, 1.2, 12.5);
+  codeBlock(s, "x = scores.append(90)\nprint(x)   # None  ← 이미 scores 가 바뀌었다", 0.5, 3.45, 9, 1.5, 13);
 
   s = p.addSlide(); head(s, "AICE 실기 패턴 — 교차검증 점수 모으기", no); pageNo(s, ++i + 1, N);
-  codeBlock(s, "scores = []\nfor fold in range(5):\n    score = 0.80 + fold * 0.02   # 모델 평가 점수라고 치자\n    scores.append(score)\nprint(scores)\nprint('평균:', sum(scores) / len(scores))", 0.5, 1.5, 5.6, 2.6, 12.5);
-  outBlock(s, "[0.8, 0.82, 0.84, 0.86, 0.88]\n평균: 0.84", 0.5, 4.25, 5.6, 0.9, 11);
+  codeBlock(s, "scores = []\nfor fold in range(5):\n    score = 80 + fold * 2    # 폴드별 점수\n    scores.append(score)\nprint(scores)\nprint('평균:', sum(scores) / len(scores))", 0.5, 1.5, 5.6, 2.45, 12.5);
+  outBlock(s, "[80, 82, 84, 86, 88]\n평균: 84.0", 0.5, 4.1, 5.6, 1.05, 11);
   card(s, 6.35, 1.5, 3.15, 3.65, { tone: "indigo", title: "왜 append 인가", body: "반복마다 점수가 '하나' 나온다. 하나씩 덧붙이니 append.\n\n반대로 두 실험의 점수 리스트를 합칠 때는 all_scores.extend(scores)." });
 
   s = p.addSlide(); head(s, "실습 — 앱 6차시 (10분)", no); pageNo(s, ++i + 1, N);
@@ -191,7 +191,7 @@ function deck6() {
     { t: "STEP 2 예측", d: "실행 전에 '총 슬롯 개수' 를 먼저 말해 보기. 2 + 1 + 박스 수." },
     { t: "STEP 3 확인", d: "차트의 세 막대(기본 → append 후 → extend 후)가 예측과 같은지 본다." },
   ], 1.6);
-  card(s, 0.5, 3.6, 9, 1.5, { tone: "amber", title: "도전 과제", body: "박스를 4개로 올렸을 때 extend 대신 append 를 쓰면 슬롯이 몇 개가 될까? (답: 4개 — 박스 하나가 원소 1개) 짝과 답을 맞춰 보세요." });
+  card(s, 0.5, 3.3, 9, 1.8, { tone: "amber", title: "도전 과제", body: "박스를 4개로 올렸을 때 extend 대신 append 를 쓰면 슬롯이 몇 개가 될까?\n(답: 4개 — 박스 하나가 원소 1개로 들어간다) 짝과 답을 맞춰 보세요." });
 
   s = p.addSlide(); head(s, "확인 퀴즈", no); pageNo(s, ++i + 1, N);
   quiz(s, [
@@ -249,7 +249,7 @@ function deck7() {
     { t: "remove 결과를 변수에", d: "x = lst.remove('a') → x 는 None. 값이 필요하면 pop 을 쓴다." },
     { t: "반복문 안에서 지우기", d: "for x in lst: lst.remove(x) 는 원소를 건너뛴다. 새 리스트를 만들거나 복사본으로 돈다." },
   ], 1.6);
-  codeBlock(s, "target = '어뷰저'\nif target in queue:\n    queue.remove(target)\nelse:\n    print('이미 없음')", 0.5, 3.75, 9, 1.35, 12);
+  codeBlock(s, "target = '어뷰저'\nif target in queue:\n    queue.remove(target)\nelse:\n    print('이미 없음')", 0.5, 3.4, 9, 1.7, 12);
 
   s = p.addSlide(); head(s, "AICE 실기 패턴 — 정답 라벨 떼어내기", no); pageNo(s, ++i + 1, N);
   codeBlock(s, "cols = ['age', 'income', 'score', 'churn']   # df.columns 라고 치자\ntarget = cols.pop(-1)     # 마지막 열 = 정답(y)\nfeatures = cols           # 나머지 = 입력(X)\nprint('y:', target)\nprint('X:', features)", 0.5, 1.5, 5.6, 2.4, 12.5);
@@ -317,7 +317,7 @@ function deck8() {
     { t: "무한 루프", d: "while True: 안에 break 가 없거나, 조건 변수를 안 바꾸면 영원히 돈다. 노트북 ■ 버튼으로 중단." },
     { t: "들여쓰기", d: "반복할 줄은 4칸 들여쓰기. 한 줄이라도 빠지면 반복문 밖에서 한 번만 실행된다." },
   ], 1.6);
-  codeBlock(s, "n = 0\nwhile n < 3:\n    print(n)\n    # n += 1 을 잊으면 0이 무한히 찍힌다", 0.5, 3.75, 9, 1.35, 12);
+  codeBlock(s, "n = 0\nwhile n < 3:\n    print(n)\n    # n += 1 을 잊으면 0이 무한히 찍힌다", 0.5, 3.4, 9, 1.7, 12);
 
   s = p.addSlide(); head(s, "실습 — 앱 8차시 (10분) · 확인 퀴즈", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
@@ -381,7 +381,7 @@ function deck9() {
     { t: "정의만 하고 안 부름", d: "def 만 쓰면 아무 일도 안 일어난다. 이름(값) 으로 호출해야 실행." },
     { t: "괄호 빼먹기", d: "df['score'].apply(to_tier()) 처럼 괄호를 붙이면 결과값을 넘기게 됨. 함수 이름만 넘긴다." },
   ], 1.6);
-  codeBlock(s, "def f(x):\n    print(x * 2)      # 화면에만 나옴\nv = f(3)\nprint(v)              # None", 0.5, 3.75, 9, 1.35, 12);
+  codeBlock(s, "def f(x):\n    print(x * 2)      # 화면에만 나옴\nv = f(3)\nprint(v)              # None", 0.5, 3.4, 9, 1.7, 12);
 
   s = p.addSlide(); head(s, "실습 — 앱 9차시 (10분) · 확인 퀴즈", no); pageNo(s, ++i + 1, N);
   numberRow(s, [
