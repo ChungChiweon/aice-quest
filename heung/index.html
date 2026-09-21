@@ -341,7 +341,7 @@
           { id: "p_end", label: "문장 끝 기호 (end)", type: "select", options: ["!\\n", " 完\\n", " ^^\\n", "\\n"], default: "!\\n" }
         ],
         chartType: "bar",
-        chartTitle: "1차시: 문자열 길이 및 파라미터 바이트 분석"
+        chartTitle: "1차시: print 가 실제로 찍은 글자 수 (sep · end 반영)"
       },
       {
         id: 2,
@@ -374,7 +374,7 @@
           { id: "p_bonus", label: "마지막 시험 보너스 점수", type: "slider", min: 50, max: 100, step: 5, default: 95 }
         ],
         chartType: "doughnut",
-        chartTitle: "과목별 점수 배분 및 평균 달성도"
+        chartTitle: "3차시: 점수 4개와 평균선 (sum ÷ len)"
       },
       {
         id: 4,
@@ -409,7 +409,7 @@
           { id: "p_cutmid", label: "중간 커트라인 (elif)", type: "select", options: ["70", "60", "50"], default: "70" }
         ],
         chartType: "doughnut",
-        chartTitle: "커트라인 기준 도달 비율 판정"
+        chartTitle: "5차시: 내 점수 vs 커트라인 두 줄 — 넘은 줄이 등급"
       },
 // --- PACK 2 (Quests 6 ~ 10) ---
 {
@@ -1692,18 +1692,21 @@
 
       // --- PACK 1 (IDs 1 ~ 5) ---
 if (activeQuest.id === 1) {
+        // 1차시: 차트는 print 가 실제로 찍은 결과를 센다 — '도전자:' + sep + name + end 의 글자 수. sep·end 를 바꾸면 막대가 변한다.
         const textVal = document.getElementById("p_text") ? document.getElementById("p_text").value : "AI 도전자 홍길동";
         const sepVal = document.getElementById("p_sep") ? document.getElementById("p_sep").value : "-";
         const endVal = document.getElementById("p_end") ? document.getElementById("p_end").value : "!";
         const cleanEnd = endVal.replace(/\\n/g, "").replace(/\n/g, "");
+        const line1 = "도전자:" + sepVal + textVal + cleanEnd;
+        const line2 = "자료형 확인: <class 'str'>";
         config = {
           type: "bar",
           data: {
-            labels: [`닉네임 길이 (${textVal.length}자)`, `메모리 크기 (${textVal.length * 2}B)`, `구분자 길이 (${sepVal.length}자)`, `종결자 길이 (${cleanEnd.length}자)`],
+            labels: ["name 변수 (str)", "1번째 print 출력", "2번째 print 출력"],
             datasets: [{
-              label: "1차시 문자열 데이터 메트릭",
-              data: [textVal.length, textVal.length * 2, sepVal.length, cleanEnd.length],
-              backgroundColor: ["#4f46e5", "#6366f1", "#818cf8", "#a5b4fc"],
+              label: "글자 수 (len)",
+              data: [textVal.length, line1.length, line2.length],
+              backgroundColor: ["#94a3b8", "#4f46e5", "#818cf8"],
               borderRadius: 8
             }]
           },
@@ -1712,11 +1715,10 @@ if (activeQuest.id === 1) {
             maintainAspectRatio: false,
             plugins: {
               legend: { display: false },
-              title: { display: true, text: `1차시: "${textVal}" 문자열 및 출력 파라미터 규격 분석` }
+              title: { display: true, text: `print 가 찍은 글자 수 — sep='${sepVal}' end='${cleanEnd}'` },
+              tooltip: { callbacks: { label: (ctx) => [textVal, line1, line2][ctx.dataIndex] + `  (${ctx.raw}자)` } }
             },
-            scales: {
-              y: { beginAtZero: true }
-            }
+            scales: { y: { beginAtZero: true, ticks: { stepSize: 5 } } }
           }
         };
       } else if (activeQuest.id === 2) {
@@ -1736,18 +1738,24 @@ if (activeQuest.id === 1) {
           options: { responsive: true, maintainAspectRatio: false }
         };
       } else if (activeQuest.id === 3) {
+        // 3차시: 코드가 계산하는 것은 총점과 평균이다. 점수 네 개를 막대로, sum/len 평균을 가로선으로 — 보너스를 바꾸면 선이 움직인다.
         const bonus = parseInt(document.getElementById("p_bonus")?.value || "95", 10);
+        const scores = [80, 90, 75, bonus];
+        const total = scores.reduce((a, b) => a + b, 0);
+        const avg = total / scores.length;
         config = {
-          type: "doughnut",
           data: {
-            labels: ["국어(80)", "수학(90)", "영어(75)", `보너스(${bonus})`],
-            datasets: [{
-              data: [80, 90, 75, bonus],
-              backgroundColor: ["#6366f1", "#3b82f6", "#10b981", "#f59e0b"],
-              borderWidth: 0
-            }]
+            labels: ["국어", "수학", "영어", "보너스"],
+            datasets: [
+              { type: "bar", label: "점수", data: scores, backgroundColor: ["#6366f1", "#6366f1", "#6366f1", "#f59e0b"], borderRadius: 8, order: 2 },
+              { type: "line", label: `평균 = sum ${total} / len 4 = ${avg.toFixed(1)}`, data: scores.map(() => avg), borderColor: "#dc2626", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, order: 1 }
+            ]
           },
-          options: { responsive: true, maintainAspectRatio: false }
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: `총점 ${total} ÷ 개수 4 = 평균 ${avg.toFixed(1)}` } },
+            scales: { y: { min: 0, max: 100 } }
+          }
         };
       } else if (activeQuest.id === 4) {
         // 차트는 코드가 실제로 찍는 값을 그린다. enumerate 순번은 start부터 1씩, range 값은 start부터 step씩.
@@ -1767,24 +1775,27 @@ if (activeQuest.id === 1) {
           options: { responsive: true, maintainAspectRatio: false, scales: { y: { beginAtZero: true, ticks: { stepSize: 1 } } } }
         };
       } else if (activeQuest.id === 5) {
-        // 5차시: 티어 판정은 코드와 같은 커트라인(p_cuthigh / p_cutmid)으로 한다. 고정값 90/70 이면 코드와 차트가 어긋난다.
+        // 5차시: if-elif-else 는 '어느 커트라인을 넘었나' 다. 내 점수 막대와 커트라인 두 줄을 같이 그리면 판정이 눈에 보인다.
         const sc = parseInt(document.getElementById("p_score")?.value || "85", 10);
         const cutHigh = parseInt(document.getElementById("p_cuthigh")?.value || "90", 10);
         const cutMid = parseInt(document.getElementById("p_cutmid")?.value || "70", 10);
         const tier = sc >= cutHigh ? "CHALLENGER" : (sc >= cutMid ? "GOLD" : "BRONZE");
         const tierColor = sc >= cutHigh ? "#10b981" : (sc >= cutMid ? "#3b82f6" : "#ef4444");
+        const labels = ["", "내 점수", ""];   // 가로선이 그어지려면 x 축 점이 셋은 있어야 한다
         config = {
-          type: "doughnut",
           data: {
-            labels: [`내 점수 ${sc}점 → ${tier}`, "만점 잔여"],
-            datasets: [{
-              data: [sc, Math.max(0, 100 - sc)],
-              backgroundColor: [tierColor, "#e2e8f0"],
-              borderWidth: 0
-            }]
+            labels,
+            datasets: [
+              { type: "bar", label: `내 점수 ${sc}점 → ${tier}`, data: [null, sc, null], backgroundColor: tierColor, borderRadius: 8, barThickness: 90, order: 3 },
+              { type: "line", label: `if score >= ${cutHigh} → CHALLENGER`, data: [cutHigh, cutHigh, cutHigh], borderColor: "#10b981", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, order: 1 },
+              { type: "line", label: `elif score >= ${cutMid} → GOLD`, data: [cutMid, cutMid, cutMid], borderColor: "#3b82f6", borderWidth: 2, borderDash: [6, 4], pointRadius: 0, order: 2 }
+            ]
           },
-          options: { responsive: true, maintainAspectRatio: false,
-            plugins: { title: { display: true, text: `if ≥ ${cutHigh} → CHALLENGER · elif ≥ ${cutMid} → GOLD · else → BRONZE` } } }
+          options: {
+            responsive: true, maintainAspectRatio: false,
+            plugins: { title: { display: true, text: `${sc}점은 ${sc >= cutHigh ? cutHigh + " 이상" : (sc >= cutMid ? cutMid + " 이상 " + cutHigh + " 미만" : cutMid + " 미만")} → ${tier}` } },
+            scales: { y: { min: 0, max: 100 } }
+          }
         };
       }
 else // --- PACK 2 (IDs 6 ~ 10) ---
