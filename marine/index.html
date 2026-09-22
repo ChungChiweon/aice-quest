@@ -23,6 +23,7 @@
       body.printing-quest #quest-print { position: absolute; left: 0; top: 0; width: 100%; display: block; }
       @page { size: A4; margin: 14mm; }
       .qp-page { page-break-before: always; }
+      .rv-card { page-break-inside: avoid; }
     }
     #quest-print { display: none; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #0f172a; }
     #quest-print h1 { font-size: 20px; margin: 0 0 4px; }
@@ -34,6 +35,35 @@
     #quest-print td:first-child { color: #475569; background: #f8fafc; }
     #quest-print img { max-width: 100%; height: auto; border: 1px solid #e2e8f0; border-radius: 6px; }
     #quest-print .qp-log { font-family: "Courier New", monospace; font-size: 10.5px; white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; }
+    /* 복습 노트 */
+    #quest-print .rv-parts { width: 100%; margin-bottom: 6px; }
+    #quest-print .rv-parts td:last-child { width: 45%; }
+    #quest-print .rv-bar { height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden; }
+    #quest-print .rv-bar i { display: block; height: 100%; background: #4f46e5; }
+    #quest-print .rv-grid { display: grid; grid-template-columns: repeat(10, 1fr); gap: 3px; }
+    #quest-print .rv-cell { border: 1px solid #e2e8f0; border-radius: 4px; padding: 3px 4px; font-size: 8.5px; color: #94a3b8; min-height: 30px; }
+    #quest-print .rv-cell b { display: block; font-size: 10px; color: #64748b; }
+    #quest-print .rv-cell span { font-family: "Courier New", monospace; font-size: 7.5px; word-break: break-all; }
+    #quest-print .rv-cell.on { background: #eef2ff; border-color: #a5b4fc; color: #312e81; }
+    #quest-print .rv-cell.on b { color: #4f46e5; }
+    #quest-print .rv-howto { font-size: 10.5px; line-height: 1.6; color: #334155; background: #fffbeb; border: 1px solid #fde68a; border-radius: 6px; padding: 8px 10px; }
+    #quest-print .rv-pagehead { font-size: 10px; font-weight: 800; color: #4f46e5; letter-spacing: .04em; margin-bottom: 4px; }
+    #quest-print .rv-card { border: 1px solid #e2e8f0; border-radius: 6px; padding: 6px 8px; margin-bottom: 5px; }
+    #quest-print .rv-card.todo { border-style: dashed; color: #64748b; }
+    #quest-print .rv-head { display: flex; gap: 8px; align-items: baseline; font-size: 10px; margin-bottom: 3px; }
+    #quest-print .rv-no { font-weight: 800; color: #4f46e5; }
+    #quest-print .rv-title { font-weight: 700; color: #0f172a; }
+    #quest-print .rv-fn { font-family: "Courier New", monospace; font-size: 9.5px; color: #334155; }
+    #quest-print .rv-state { margin-left: auto; font-size: 8.5px; color: #94a3b8; }
+    #quest-print .rv-body { display: flex; gap: 8px; align-items: flex-start; }
+    #quest-print .rv-body pre { flex: 1 1 auto; font-size: 8.5px; line-height: 1.35; padding: 6px 8px; max-height: 34mm; overflow: hidden; }
+    #quest-print .rv-body img { flex: 0 0 auto; width: 48mm; max-height: 30mm; object-fit: contain; border: none; background: #fff; }
+    #quest-print .rv-params { font-size: 8.5px; color: #475569; margin-top: 3px; }
+    #quest-print .rv-rule { font-size: 8.5px; color: #92400e; margin-top: 3px; }
+    #quest-print .rv-cheat { width: 100%; font-size: 8px; }
+    #quest-print .rv-cheat td { padding: 2px 5px; }
+    #quest-print .rv-cheat td:nth-child(3), #quest-print .rv-cheat td:nth-child(4) { font-family: "Courier New", monospace; font-weight: 700; white-space: nowrap; }
+    #quest-print .rv-cheat tr.todo td { color: #94a3b8; }
     #quest-print .qp-foot { margin-top: 14px; font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
   </style>
 </head>
@@ -59,6 +89,9 @@
           <i class="fa-solid fa-user-graduate text-slate-600 text-xs"></i>
           <span id="current-user-name" class="font-bold text-xs sm:text-sm text-slate-700"></span>
           <span class="text-xs bg-teal-100 text-teal-700 px-2 py-0.5 rounded-full font-bold font-mono" id="user-progress-badge">진도: 0 / 50</span>
+          <button onclick="printReviewDigest()" title="50차시 전체 복습 노트 (12쪽 안팎)" class="ml-1 text-xs font-bold text-indigo-700 bg-indigo-50 border border-indigo-200 px-2 py-0.5 rounded-full hover:bg-indigo-100">
+            <i class="fa-solid fa-book-open mr-1"></i>복습 노트
+          </button>
           <button onclick="printAllResults()" title="저장된 차시 결과를 한 PDF로" class="ml-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hover:bg-emerald-100">
             <i class="fa-solid fa-file-pdf mr-1"></i>결과 모아 PDF <span id="bundle-count">0</span>
           </button>
@@ -709,7 +742,7 @@
         step1Label: "get_dummies 열 확장 파이프라인 조립",
         codeTemplate: "# 범주형 열을 가로로 펼치는 원-핫 인코딩\ndf_encoded = pd.get_dummies(df, columns=['{DUMMY_COL}'], drop_first={DROP_OPT}, dtype=int)\nprint('변환 전 컬럼 수:', len(df.columns))\nprint('원-핫 인코딩 후 컬럼 수:', len(df_encoded.columns))\nprint(df_encoded.head(2))",
         params: [
-          { id: "p_col", label: "원-핫 인코딩 타깃 컬럼", type: "select", options: ["포지션 (4개 범주)", "티어 (3개 범주)", "결제수단 (3개 범주)"], default: "포지션 (4개 범주)" },
+          { id: "p_dummy", label: "원-핫 인코딩 타깃 컬럼", type: "select", options: ["포지션 (4개 범주)", "티어 (3개 범주)", "결제수단 (3개 범주)"], default: "포지션 (4개 범주)" },
           { id: "p_drop", label: "첫 번째 열 제거 여부 (drop_first)", type: "select", options: ["True (필수 다중공선성 방지)", "False (모든 열 보존)"], default: "True (필수 다중공선성 방지)" }
         ],
         chartTitle: "22차시: 원-핫 인코딩 전후 확장된 컬럼(Feature) 수 비교"
@@ -1480,102 +1513,107 @@
 
         function updateCodePreview() {
       if (!activeQuest) return;
-      let code = activeQuest.codeTemplate;
+      document.getElementById("code-output").innerText = buildCodeFor(activeQuest, true);
+    }
 
-      (activeQuest.params || []).forEach(p => {
-        const el = document.getElementById(p.id);
+    /* 퀘스트의 코드 템플릿에 파라미터를 채운다. useDom=false 면 화면을 안 보고 기본값만 쓴다 (복습 노트의 미완료 차시용) */
+    function buildCodeFor(quest, useDom) {
+      let code = quest.codeTemplate;
+
+      (quest.params || []).forEach(p => {
+        const el = useDom ? document.getElementById(p.id) : null;
         const rawVal = el ? el.value : (p.default !== undefined ? p.default : "");
         const val = String(rawVal);
 
         // Pack 1
-        if (p.id === "p_text") code = code.replace("{USER_TEXT}", val);
-        if (p.id === "p_sep") code = code.replace("{PARAM_SEP}", val);
+        if (p.id === "p_text") code = code.split("{USER_TEXT}").join(val);
+        if (p.id === "p_sep") code = code.split("{PARAM_SEP}").join(val);
         if (p.id === "p_end") {
           const safeEnd = val.replace(/\n/g, "\\n");
-          code = code.replace("{PARAM_END}", safeEnd);
+          code = code.split("{PARAM_END}").join(safeEnd);
         }
-        if (p.id === "p_val") code = code.replace("{VAL}", val);
-        if (p.id === "p_float") code = code.replace("{FLOAT_ADD}", val);
-        if (p.id === "p_bonus") code = code.replace("{BONUS_SCORE}", val);
-        if (p.id === "p_start") code = code.replace("{START_IDX}", val);
-        if (p.id === "p_score") code = code.replace("{SCORE_VAL}", val);
-        if (p.id === "p_cuthigh") code = code.replace("{CUT_HIGH}", val);
-        if (p.id === "p_cutmid") code = code.replace("{CUT_MID}", val);
+        if (p.id === "p_val") code = code.split("{VAL}").join(val);
+        if (p.id === "p_float") code = code.split("{FLOAT_ADD}").join(val);
+        if (p.id === "p_bonus") code = code.split("{BONUS_SCORE}").join(val);
+        if (p.id === "p_start") code = code.split("{START_IDX}").join(val);
+        if (p.id === "p_score") code = code.split("{SCORE_VAL}").join(val);
+        if (p.id === "p_cuthigh") code = code.split("{CUT_HIGH}").join(val);
+        if (p.id === "p_cutmid") code = code.split("{CUT_MID}").join(val);
 
         // Pack 2
-        if (p.id === "p_single") code = code.replace("{SINGLE_ITEM}", val);
+        if (p.id === "p_single") code = code.split("{SINGLE_ITEM}").join(val);
         if (p.id === "p_box") {
           const count = parseInt(val, 10) || 2;
           const boxArr = Array.from({ length: count }, (_, i) => `'보석_${i+1}'`);
-          code = code.replace("{BOX_ITEMS}", `[${boxArr.join(", ")}]`);
+          code = code.split("{BOX_ITEMS}").join(`[${boxArr.join(", ")}]`);
         }
         if (p.id === "p_pop") {
           const pIdx = val.includes("맨 앞") ? "0" : (val.includes("맨 뒤") ? "-1" : "1");
-          code = code.replace("{POP_IDX}", pIdx);
+          code = code.split("{POP_IDX}").join(pIdx);
         }
-        if (p.id === "p_target") code = code.replace("{REMOVE_TARGET}", val);
-        if (p.id === "p_max") code = code.replace("{MAX_LOOP}", val);
-        if (p.id === "p_stop") code = code.replace("{STOP_VAL}", val);
-        if (p.id === "p_base") code = code.replace("{BASE_PRICE}", val);
-        if (p.id === "p_tax") code = code.replace("{TAX_RATE}", val);
-        if (p.id === "p_shape") code = code.replace("{SHAPE_TYPE}", val);
+        if (p.id === "p_target") code = code.split("{REMOVE_TARGET}").join(val);
+        if (p.id === "p_max") code = code.split("{MAX_LOOP}").join(val);
+        if (p.id === "p_stop") code = code.split("{STOP_VAL}").join(val);
+        if (p.id === "p_base") code = code.split("{BASE_PRICE}").join(val);
+        if (p.id === "p_tax") code = code.split("{TAX_RATE}").join(val);
+        if (p.id === "p_shape") code = code.split("{SHAPE_TYPE}").join(val);
 
         // Pack 3
-        if (p.id === "p_dataset") code = code.replace("{DATASET_FILE}", val.split(" ")[0]);
-        if (p.id === "p_encoding") code = code.replace("{ENCODING_OPT}", val.split(" ")[0]);
-        if (p.id === "p_index") code = code.replace("{INDEX_OPT}", val.includes("False") ? "False" : "True");
-        if (p.id === "p_top") code = code.replace("{TOP_N}", val);
-        if (p.id === "p_bottom") code = code.replace("{BOTTOM_N}", val);
-        if (p.id === "p_verbose") code = code.replace("{VERBOSE_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_category") code = code.replace("{CATEGORY_COL}", val.split(" ")[0]);
-        if (p.id === "p_percentile") code = code.replace("{PERCENTILE_OPT}", val.split(" ")[0]);
-        if (p.id === "p_normalize") code = code.replace("{NORMALIZE_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_colA") code = code.replace("{COL_A}", val);
-        if (p.id === "p_colB") code = code.replace("{COL_B}", val);
+        if (p.id === "p_dataset") code = code.split("{DATASET_FILE}").join(val.split(" ")[0]);
+        if (p.id === "p_encoding") code = code.split("{ENCODING_OPT}").join(val.split(" ")[0]);
+        if (p.id === "p_index") code = code.split("{INDEX_OPT}").join(val.includes("False") ? "False" : "True");
+        if (p.id === "p_top") code = code.split("{TOP_N}").join(val);
+        if (p.id === "p_bottom") code = code.split("{BOTTOM_N}").join(val);
+        if (p.id === "p_verbose") code = code.split("{VERBOSE_OPT}").join(val.includes("True") ? "True" : "False");
+        if (p.id === "p_category") code = code.split("{CATEGORY_COL}").join(val.split(" ")[0]);
+        if (p.id === "p_percentile") code = code.split("{PERCENTILE_OPT}").join(val.split(" ")[0]);
+        if (p.id === "p_normalize") code = code.split("{NORMALIZE_OPT}").join(val.includes("True") ? "True" : "False");
+        if (p.id === "p_colA") code = code.split("{COL_A}").join(val);
+        if (p.id === "p_colB") code = code.split("{COL_B}").join(val);
         if (p.id === "p_ilocRows") {
-          code = code.replace("{LOC_ROWS}", val);
-          code = code.replace("{ILOC_ROWS}", val);
+          code = code.split("{LOC_ROWS}").join(val);
+          code = code.split("{ILOC_ROWS}").join(val);
         }
 
         // Pack 4
-        if (p.id === "p_col") code = code.replace("{TARGET_COL}", val.split(" ")[0]);
-        if (p.id === "p_subset") code = code.replace("{SUBSET_COL}", val.split(" ")[0]);
-        if (p.id === "p_how") code = code.replace("{HOW_OPT}", val.split(" ")[0]);
-        if (p.id === "p_fillcol") code = code.replace("{FILL_COL}", val);
-        if (p.id === "p_method") code = code.replace("{METHOD_TYPE}", val.split(" ")[0]);
-        if (p.id === "p_dropcol") code = code.replace("{DROP_COL}", val);
-        if (p.id === "p_newname") code = code.replace("{NEW_NAME}", val);
-        if (p.id === "p_numcol") code = code.replace("{NUM_COL}", val);
-        if (p.id === "p_inttype") code = code.replace("{INT_TYPE}", val.split(" ")[0]);
+        if (p.id === "p_col") code = code.split("{TARGET_COL}").join(val.split(" ")[0]);
+        if (p.id === "p_subset") code = code.split("{SUBSET_COL}").join(val.split(" ")[0]);
+        if (p.id === "p_how") code = code.split("{HOW_OPT}").join(val.split(" ")[0]);
+        if (p.id === "p_fillcol") code = code.split("{FILL_COL}").join(val);
+        if (p.id === "p_method") code = code.split("{METHOD_TYPE}").join(val.split(" ")[0]);
+        if (p.id === "p_dropcol") code = code.split("{DROP_COL}").join(val);
+        if (p.id === "p_newname") code = code.split("{NEW_NAME}").join(val);
+        if (p.id === "p_numcol") code = code.split("{NUM_COL}").join(val);
+        if (p.id === "p_inttype") code = code.split("{INT_TYPE}").join(val.split(" ")[0]);
 
         // Pack 5
-        if (p.id === "p_drop") code = code.replace("{DROP_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_scaler") code = code.replace("{SCALER_TYPE}", val.split(" ")[0]);
-        if (p.id === "p_group") code = code.replace("{GROUP_COL}", val.split(" ")[0]);
-        if (p.id === "p_agg") code = code.replace("{AGG_OPT}", val.split(" ")[0]);
-        if (p.id === "p_sortcol") code = code.replace("{SORT_COL}", val.split(" ")[0]);
-        if (p.id === "p_asc") code = code.replace("{ASC_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_dummy") code = code.replace("{DUMMY_COL}", val.split(" ")[0]);
+        if (p.id === "p_drop") code = code.split("{DROP_OPT}").join(val.includes("True") ? "True" : "False");
+        if (p.id === "p_scaler") code = code.split("{SCALER_TYPE}").join(val.split(" ")[0]);
+        if (p.id === "p_group") code = code.split("{GROUP_COL}").join(val.split(" ")[0]);
+        if (p.id === "p_agg") code = code.split("{AGG_OPT}").join(val.split(" ")[0]);
+        if (p.id === "p_sortcol") code = code.split("{SORT_COL}").join(val.split(" ")[0]);
+        if (p.id === "p_asc") code = code.split("{ASC_OPT}").join(val.includes("True") ? "True" : "False");
+        if (p.id === "p_dummy") code = code.split("{DUMMY_COL}").join(val.split(" ")[0]);
 
         // Pack 6
         if (p.id === "p_orient") {
           const isBarh = val.includes("barh");
-          code = code.replace("{BAR_FUNC}", isBarh ? "barh" : "bar");
-          code = code.replace("{ORIENT_DESC}", isBarh ? "가로형 막대그래프로 눕혀서 출력" : "세로형 막대그래프로 기둥 출력");
+          code = code.split("{BAR_FUNC}").join(isBarh ? "barh" : "bar");
+          code = code.split("{ORIENT_DESC}").join(isBarh ? "가로형 막대그래프로 눕혀서 출력" : "세로형 막대그래프로 기둥 출력");
         }
         if (p.id === "p_color") {
           const cHex = val.includes("emerald") ? "#10b981" : (val.includes("rose") ? "#f43f5e" : "#4f46e5");
-          code = code.replace("{COLOR_HEX}", cHex);
+          code = code.split("{COLOR_HEX}").join(cHex);
         }
-        if (p.id === "p_alpha") code = code.replace("{ALPHA_VAL}", val);
-        if (p.id === "p_ptsize") code = code.replace("{POINT_SIZE}", val);
-        if (p.id === "p_ptalpha") code = code.replace("{ALPHA_SCATTER}", val);
-        if (p.id === "p_annot") code = code.replace("{ANNOT_OPT}", val.includes("True") ? "True" : "False");
-        if (p.id === "p_cmap") code = code.replace("{CMAP_OPT}", val.split(" ")[0]);
-        if (p.id === "p_whis") code = code.replace("{WHIS_VAL}", val);
-        if (p.id === "p_title") code = code.replace("{CHART_TITLE}", val);
-        if (p.id === "p_loc") code = code.replace("{LEGEND_LOC}", val.split(" ")[0]);
-        if (p.id === "p_dpi") code = code.replace("{DPI_VAL}", val.split(" ")[0]);
+        if (p.id === "p_alpha") code = code.split("{ALPHA_VAL}").join(val);
+        if (p.id === "p_ptsize") code = code.split("{POINT_SIZE}").join(val);
+        if (p.id === "p_ptalpha") code = code.split("{ALPHA_SCATTER}").join(val);
+        if (p.id === "p_annot") code = code.split("{ANNOT_OPT}").join(val.includes("True") ? "True" : "False");
+        if (p.id === "p_cmap") code = code.split("{CMAP_OPT}").join(val.split(" ")[0]);
+        if (p.id === "p_whis") code = code.split("{WHIS_VAL}").join(val);
+        if (p.id === "p_title") code = code.split("{CHART_TITLE}").join(val);
+        if (p.id === "p_loc") code = code.split("{LEGEND_LOC}").join(val.split(" ")[0]);
+        if (p.id === "p_dpi") code = code.split("{DPI_VAL}").join(val.split(" ")[0]);
 
         // Pack 7
         if (p.id === "p_testsize") code = code.replace(/{TEST_SIZE}/g, val);
@@ -1596,22 +1634,22 @@
 
         // Pack 9
         if (p.id === "p_features") code = code.replace(/{INPUT_FEATURES}/g, val.split("개")[0]);
-        if (p.id === "p_u1") code = code.replace("{UNITS_1}", val);
-        if (p.id === "p_u2") code = code.replace("{UNITS_2}", val);
+        if (p.id === "p_u1") code = code.split("{UNITS_1}").join(val);
+        if (p.id === "p_u2") code = code.split("{UNITS_2}").join(val);
         if (p.id === "p_opt") code = code.replace(/{OPT_NAME}/g, val.split(" ")[0]);
         if (p.id === "p_loss") code = code.replace(/{LOSS_NAME}/g, val.split(" ")[0]);
         if (p.id === "p_epochs") code = code.replace(/{EPOCH_VAL}/g, val);
-        if (p.id === "p_batch") code = code.replace("{BATCH_VAL}", val.split(" ")[0]);
+        if (p.id === "p_batch") code = code.split("{BATCH_VAL}").join(val.split(" ")[0]);
 
         // Pack 10
-        if (p.id === "p_patience") code = code.replace("{PATIENCE_VAL}", val);
-        if (p.id === "p_difficulty") code = code.replace("{DIFFICULTY}", val);
-        if (p.id === "p_passScore") code = code.replace("{PASS_SCORE}", val);
-        if (p.id === "p_pledge") code = code.replace("{PLEDGE_TEXT}", val);
-        if (p.id === "p_date") code = code.replace("{DATE_VAL}", val);
+        if (p.id === "p_patience") code = code.split("{PATIENCE_VAL}").join(val);
+        if (p.id === "p_difficulty") code = code.split("{DIFFICULTY}").join(val);
+        if (p.id === "p_passScore") code = code.split("{PASS_SCORE}").join(val);
+        if (p.id === "p_pledge") code = code.split("{PLEDGE_TEXT}").join(val);
+        if (p.id === "p_date") code = code.split("{DATE_VAL}").join(val);
       });
 
-      document.getElementById("code-output").innerText = code;
+      return code;
     }
 
 
@@ -1747,6 +1785,59 @@
         <div class="qp-foot"><span>차시별 결과는 다음 쪽부터 한 장씩</span><span>서명: ____________</span></div>
       </section>`;
       runPrint(cover + ids.map((id) => resultSectionHTML(all[id], done)).join(""));
+    }
+
+    function printReviewDigest() {
+      const all = loadResults();
+      const done = Object.values(studentProgress).filter(Boolean).length;
+      const now = new Date();
+      const today = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+      const parts = [["Part 1. 파이썬 기초", 1, 10], ["Part 2. 판다스 & 정제", 11, 25], ["Part 3. EDA 시각화", 26, 30], ["Part 4. 머신러닝", 31, 40], ["Part 5. 딥러닝 & 실전", 41, 50]];
+      const isDone = (id) => !!studentProgress[id];
+
+      /* 표지 + 진도표 */
+      const grid = questsDB.map((q) => `<div class="rv-cell ${isDone(q.id) ? "on" : ""}"><b>${q.id}</b><span>${escHtml(q.funcA)}</span></div>`).join("");
+      const partRows = parts.map(([name, a, b]) => { const n = b - a + 1; const d = questsDB.filter((q) => q.id >= a && q.id <= b && isDone(q.id)).length; return `<tr><td>${name}</td><td>${a}~${b}차시</td><td>${d} / ${n}</td><td><div class="rv-bar"><i style="width:${Math.round(d / n * 100)}%"></i></div></td></tr>`; }).join("");
+      const cover = `<section class="rv-cover">
+        <h1>AICE 어소시에이트 실기 · 복습 노트</h1>
+        <div class="qp-meta">B학교(해양마고) · 학생: <b>${escHtml(currentStudent || "게스트")}</b> · ${today} · 완료 ${done}/50</div>
+        <div class="qp-sec">파트별 진도</div>
+        <table class="rv-parts">${partRows}</table>
+        <div class="qp-sec">50차시 한눈에 — 색칠된 칸이 끝낸 차시</div>
+        <div class="rv-grid">${grid}</div>
+        <div class="qp-sec">이 노트 쓰는 법</div>
+        <div class="rv-howto">① 차시 카드의 코드를 보지 말고 함수 이름만 보고 다시 써 본다 &nbsp;② 「족보」 한 줄을 소리 내어 읽는다 &nbsp;③ 마지막 쪽 치트시트로 100개 함수를 훑는다 &nbsp;④ 미완료 차시는 앱에서 마저 하고 노트를 다시 뽑는다</div>
+      </section>`;
+
+      /* 차시 카드 — 6장/쪽. 한 차시는 내가 조립한 코드(없으면 기본 코드) + 파라미터 + 족보 + 작은 차트 */
+      const cards = questsDB.map((q) => {
+        const snap = all[q.id];
+        const code = snap ? snap.code : buildCodeFor(q, false);
+        const params = snap && snap.params.length ? snap.params.map(([k, v]) => `${escHtml(k)}: <b>${escHtml(v)}</b>`).join(" · ") : "";
+        return `<div class="rv-card ${isDone(q.id) ? "" : "todo"}">
+          <div class="rv-head"><span class="rv-no">${q.id}차시</span><span class="rv-title">${escHtml(q.title)}</span><span class="rv-fn">${escHtml(q.funcA)} · ${escHtml(q.funcB)}</span><span class="rv-state">${isDone(q.id) ? (snap ? snap.at : "완료") : "미완료 · 기본 코드"}</span></div>
+          <div class="rv-body">
+            <pre>${escHtml(code)}</pre>
+            ${snap && snap.img ? `<img src="${snap.img}" alt="">` : ""}
+          </div>
+          ${params ? `<div class="rv-params">${params}</div>` : ""}
+          <div class="rv-rule">족보 · ${escHtml(q.briefRule || "")}</div>
+        </div>`;
+      });
+      let pages = "";
+      for (let i = 0; i < cards.length; i += 6) {
+        const first = questsDB[i];
+        pages += `<section class="qp-page rv-page"><div class="rv-pagehead">${escHtml(getPartName(first.id))} · ${first.id}~${Math.min(first.id + 5, 50)}차시</div>${cards.slice(i, i + 6).join("")}</section>`;
+      }
+
+      /* 치트시트 — 50줄 한 쪽 */
+      const cheat = `<section class="qp-page">
+        <h1>핵심 함수 치트시트 — 50차시 100개</h1>
+        <div class="qp-meta">시험 직전에 이 한 쪽만. 왼쪽을 가리고 오른쪽 함수 이름을 말해 본다.</div>
+        <table class="rv-cheat">${questsDB.map((q) => `<tr class="${isDone(q.id) ? "" : "todo"}"><td>${q.id}</td><td>${escHtml(q.title)}</td><td>${escHtml(q.funcA)}</td><td>${escHtml(q.funcB)}</td><td>${escHtml((q.briefRule || "").slice(0, 60))}${(q.briefRule || "").length > 60 ? "…" : ""}</td></tr>`).join("")}</table>
+      </section>`;
+
+      runPrint(cover + pages + cheat);
     }
 
     function updateBundleBadge() {
