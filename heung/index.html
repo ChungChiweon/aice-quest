@@ -22,6 +22,7 @@
       body.printing-quest #quest-print, body.printing-quest #quest-print * { visibility: visible; }
       body.printing-quest #quest-print { position: absolute; left: 0; top: 0; width: 100%; display: block; }
       @page { size: A4; margin: 14mm; }
+      .qp-page { page-break-before: always; }
     }
     #quest-print { display: none; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #0f172a; }
     #quest-print h1 { font-size: 20px; margin: 0 0 4px; }
@@ -58,6 +59,9 @@
           <i class="fa-solid fa-user-graduate text-slate-600 text-xs"></i>
           <span id="current-user-name" class="font-bold text-xs sm:text-sm text-slate-700"></span>
           <span class="text-xs bg-indigo-100 text-indigo-700 px-2 py-0.5 rounded-full font-bold font-mono" id="user-progress-badge">진도: 0 / 50</span>
+          <button onclick="printAllResults()" title="저장된 차시 결과를 한 PDF로" class="ml-1 text-xs font-bold text-emerald-700 bg-emerald-50 border border-emerald-200 px-2 py-0.5 rounded-full hover:bg-emerald-100">
+            <i class="fa-solid fa-file-pdf mr-1"></i>결과 모아 PDF <span id="bundle-count">0</span>
+          </button>
           <button onclick="switchUser()" title="학생 변경" class="ml-1 text-slate-400 hover:text-slate-600 text-xs">
             <i class="fa-solid fa-arrow-right-from-bracket"></i>
           </button>
@@ -1228,6 +1232,7 @@
       userDisplay.classList.remove("hidden");
       userDisplay.classList.add("flex");
       document.getElementById("current-user-name").innerText = currentStudent;
+      updateBundleBadge();
       document.getElementById("print-student-name").innerText = currentStudent;
 
       updateProgressHeader();
@@ -1652,40 +1657,103 @@
       }, 600);
     }
 
-    /* 차시 결과지 PDF — 이름·차시·코드·파라미터·차트·터미널을 A4 한 장으로. 브라우저 인쇄창에서 'PDF로 저장' */
-    function printQuestResult() {
-      if (!activeQuest) return;
-      const esc = (t) => String(t ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
-      const code = document.getElementById("code-output")?.innerText || "";
-      const params = (activeQuest.params || []).map((pr) => {
-        const el = document.getElementById(pr.id);
-        return `<tr><td>${esc(pr.label)}</td><td>${esc(el ? el.value : "")}</td></tr>`;
-      }).join("");
-      const canvas = document.querySelector("#chart-container canvas, canvas:not(#practiceCanvas)");
-      let chartImg = "";
-      try { if (canvas && canvas.width > 0) chartImg = canvas.toDataURL("image/png"); } catch (e) { chartImg = ""; }
-      const log = (document.getElementById("terminal-log")?.innerText || "").trim();
+    /* ── 차시 결과지 ─────────────────────────────────────────
+       STEP 3 가 끝나면 스냅샷(코드·파라미터·차트 PNG·로그)을 학생별로 저장해 두고,
+       「결과 PDF 저장」은 지금 차시 한 장, 「결과 모아 PDF」는 저장된 차시 전부를 한 파일로 인쇄한다.
+       브라우저 인쇄창에서 'PDF로 저장'. */
+    const RESULTS_KEY = () => STORAGE_PREFIX + "results_" + currentStudent;
+    const escHtml = (t) => String(t ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+
+    function loadResults() { try { return JSON.parse(localStorage.getItem(RESULTS_KEY()) || "{}"); } catch (e) { return {}; } }
+
+    function chartImage() {
+      const canvas = document.getElementById("practiceCanvas");
+      try { if (canvas && !canvas.classList.contains("hidden") && canvas.width > 0) return canvas.toDataURL("image/jpeg", 0.7); } catch (e) { /* 캔버스 없음 */ }
+      return "";
+    }
+
+    /* 지금 화면의 결과를 스냅샷으로. 코드·파라미터·로그는 즉시 찍고, 차트는 애니메이션이 끝난 1.6초 뒤에 찍는다.
+       그 사이 학생이 다른 차시로 넘어가면(activeQuest 가 바뀌면) 차트는 비워 둔다 — 남의 차시 그림을 붙이지 않는다. */
+    function snapshotQuest(delayChart = false) {
+      if (!activeQuest) return null;
+      const quest = activeQuest;
+      let img = delayChart ? "" : chartImage();
       const now = new Date();
-      const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
-      const done = Object.values(studentProgress).filter(Boolean).length;
-      document.getElementById("quest-print").innerHTML = `
-        <h1>${activeQuest.id}차시 · ${esc(activeQuest.title)}</h1>
-        <div class="qp-meta">AICE 어소시에이트 실기 · A학교(흥해공고) · 학생: <b>${esc(currentStudent || "게스트")}</b> · ${stamp} · 진도 ${done}/50</div>
+      const snap = {
+        id: activeQuest.id, title: activeQuest.title, funcA: activeQuest.funcA, funcB: activeQuest.funcB,
+        chartTitle: activeQuest.chartTitle || "", rule: activeQuest.briefRule || "",
+        code: document.getElementById("code-output")?.innerText || "",
+        params: (activeQuest.params || []).map((pr) => [pr.label, document.getElementById(pr.id)?.value ?? ""]),
+        img, log: (document.getElementById("terminal-log")?.innerText || "").trim(),
+        at: `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`,
+      };
+      const store = (sn) => {
+        const all = loadResults(); all[sn.id] = sn;
+        try { localStorage.setItem(RESULTS_KEY(), JSON.stringify(all)); }
+        catch (e) { sn.img = ""; all[sn.id] = sn; try { localStorage.setItem(RESULTS_KEY(), JSON.stringify(all)); } catch (e2) { /* 저장 불가 */ } }
+      };
+      store(snap);
+      if (delayChart) setTimeout(() => { if (activeQuest === quest) { snap.img = chartImage(); store(snap); } }, 1600);
+      updateBundleBadge();
+      return snap;
+    }
+
+    function resultSectionHTML(snap, done) {
+      return `<section class="qp-page">
+        <h1>${snap.id}차시 · ${escHtml(snap.title)}</h1>
+        <div class="qp-meta">AICE 어소시에이트 실기 · A학교(흥해공고) · 학생: <b>${escHtml(currentStudent || "게스트")}</b> · ${snap.at} · 진도 ${done}/50</div>
         <div class="qp-sec">핵심 함수</div>
-        <div style="font-family:'Courier New',monospace;font-size:12px;font-weight:700">${esc(activeQuest.funcA)} &nbsp;·&nbsp; ${esc(activeQuest.funcB)}</div>
+        <div style="font-family:'Courier New',monospace;font-size:12px;font-weight:700">${escHtml(snap.funcA)} &nbsp;·&nbsp; ${escHtml(snap.funcB)}</div>
         <div class="qp-sec">STEP 1 · 조립한 코드</div>
-        <pre>${esc(code)}</pre>
-        ${params ? `<div class="qp-sec">STEP 2 · 선택한 파라미터</div><table>${params}</table>` : ""}
-        <div class="qp-sec">STEP 3 · 결과 차트 — ${esc(activeQuest.chartTitle || "")}</div>
-        ${chartImg ? `<img src="${chartImg}" alt="결과 차트">` : "<div class='qp-log'>차트 없음</div>"}
+        <pre>${escHtml(snap.code)}</pre>
+        ${snap.params.length ? `<div class="qp-sec">STEP 2 · 선택한 파라미터</div><table>${snap.params.map(([k, v]) => `<tr><td>${escHtml(k)}</td><td>${escHtml(v)}</td></tr>`).join("")}</table>` : ""}
+        <div class="qp-sec">STEP 3 · 결과 차트 — ${escHtml(snap.chartTitle)}</div>
+        ${snap.img ? `<img src="${snap.img}" alt="결과 차트">` : "<div class='qp-log'>차트 없음</div>"}
         <div class="qp-sec">실행 로그</div>
-        <div class="qp-log">${esc(log)}</div>
-        <div class="qp-foot"><span>${esc(activeQuest.briefRule || "")}</span><span>서명: ____________</span></div>`;
+        <div class="qp-log">${escHtml(snap.log)}</div>
+        <div class="qp-foot"><span>${escHtml(snap.rule)}</span><span>서명: ____________</span></div>
+      </section>`;
+    }
+
+    function runPrint(html) {
+      document.getElementById("quest-print").innerHTML = html;
       document.body.classList.add("printing-quest");
       const cleanup = () => { document.body.classList.remove("printing-quest"); window.removeEventListener("afterprint", cleanup); };
       window.addEventListener("afterprint", cleanup);
       window.print();
       setTimeout(cleanup, 60000);   // afterprint 가 안 오는 브라우저 대비
+    }
+
+    /* 지금 차시 한 장 */
+    function printQuestResult() {
+      const snap = snapshotQuest();
+      if (!snap) return;
+      runPrint(resultSectionHTML(snap, Object.values(studentProgress).filter(Boolean).length));
+    }
+
+    /* 저장된 차시 전부 — 표지 한 장 + 차시마다 한 장 */
+    function printAllResults() {
+      const all = loadResults();
+      /* 지금 보고 있는 차시의 차트가 아직 안 찍혔으면(너무 빨리 넘어온 경우) 지금 찍는다 */
+      if (activeQuest && all[activeQuest.id] && !all[activeQuest.id].img) { all[activeQuest.id].img = chartImage(); try { localStorage.setItem(RESULTS_KEY(), JSON.stringify(all)); } catch (e) {} }
+      const ids = Object.keys(all).map(Number).sort((x, y) => x - y);
+      if (!ids.length) { alert("아직 저장된 결과가 없습니다. 차시의 STEP 3 를 끝내면 자동으로 쌓입니다."); return; }
+      const done = Object.values(studentProgress).filter(Boolean).length;
+      const now = new Date();
+      const cover = `<section>
+        <h1>AICE 실기 결과 모음 · ${escHtml(currentStudent || "게스트")}</h1>
+        <div class="qp-meta">A학교(흥해공고) · ${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} · 완료 ${done}/50 · 이 파일에 ${ids.length}개 차시</div>
+        <div class="qp-sec">수록 차시</div>
+        <table>${ids.map((id) => `<tr><td>${id}차시</td><td>${escHtml(all[id].title)}</td><td>${escHtml(all[id].funcA)} · ${escHtml(all[id].funcB)}</td><td>${all[id].at}</td></tr>`).join("")}</table>
+        <div class="qp-foot"><span>차시별 결과는 다음 쪽부터 한 장씩</span><span>서명: ____________</span></div>
+      </section>`;
+      runPrint(cover + ids.map((id) => resultSectionHTML(all[id], done)).join(""));
+    }
+
+    function updateBundleBadge() {
+      const n = Object.keys(loadResults()).length;
+      const el = document.getElementById("bundle-count");
+      if (el) el.innerText = n;
     }
 
     function finalizeStep3() {
@@ -1698,6 +1766,7 @@
       localStorage.setItem(STORAGE_PREFIX + "progress_" + currentStudent, JSON.stringify(studentProgress));
 
       renderChartVisualization();
+      snapshotQuest(true);   // 코드·파라미터는 지금, 차트는 애니메이션 뒤 — 결과지용 스냅샷
 
       document.getElementById("clear-congrat-card").classList.remove("hidden");
       document.getElementById("mission-status-pill").innerText = "퀘스트 완료!";
