@@ -16,9 +16,24 @@
     .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
     @media print {
       body * { visibility: hidden; }
-      #print-area, #print-area * { visibility: visible; }
-      #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+      body:not(.printing-quest) #print-area, body:not(.printing-quest) #print-area * { visibility: visible; }
+      body:not(.printing-quest) #print-area { position: absolute; left: 0; top: 0; width: 100%; }
+      /* 차시 결과지 — STEP 3 뒤 「결과 PDF 저장」. 브라우저 인쇄 대화상자에서 'PDF로 저장' */
+      body.printing-quest #quest-print, body.printing-quest #quest-print * { visibility: visible; }
+      body.printing-quest #quest-print { position: absolute; left: 0; top: 0; width: 100%; display: block; }
+      @page { size: A4; margin: 14mm; }
     }
+    #quest-print { display: none; font-family: "Malgun Gothic", "Apple SD Gothic Neo", sans-serif; color: #0f172a; }
+    #quest-print h1 { font-size: 20px; margin: 0 0 4px; }
+    #quest-print .qp-meta { font-size: 11px; color: #475569; margin-bottom: 12px; }
+    #quest-print .qp-sec { font-size: 11px; font-weight: 800; color: #4f46e5; letter-spacing: .04em; margin: 12px 0 4px; }
+    #quest-print pre { background: #0b1020; color: #e5e7eb; padding: 10px 12px; border-radius: 6px; font-size: 11px; line-height: 1.45; white-space: pre-wrap; margin: 0; }
+    #quest-print table { border-collapse: collapse; font-size: 11px; }
+    #quest-print td { border: 1px solid #e2e8f0; padding: 4px 8px; }
+    #quest-print td:first-child { color: #475569; background: #f8fafc; }
+    #quest-print img { max-width: 100%; height: auto; border: 1px solid #e2e8f0; border-radius: 6px; }
+    #quest-print .qp-log { font-family: "Courier New", monospace; font-size: 10.5px; white-space: pre-wrap; background: #f8fafc; border: 1px solid #e2e8f0; padding: 8px 10px; border-radius: 6px; }
+    #quest-print .qp-foot { margin-top: 14px; font-size: 10px; color: #64748b; display: flex; justify-content: space-between; }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-800 min-h-screen flex flex-col">
@@ -255,6 +270,9 @@
           <div id="clear-congrat-card" class="hidden mt-4 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-center space-y-2">
             <p class="text-emerald-800 font-extrabold text-xs"><i class="fa-solid fa-circle-check mr-1"></i> 오늘 미션 3단계 올 클리어!</p>
             <div class="flex justify-center space-x-2">
+              <button onclick="printQuestResult()" class="px-3.5 py-1.5 bg-white hover:bg-emerald-100 text-emerald-800 border border-emerald-300 font-bold text-xs rounded-lg transition shadow-sm">
+                <i class="fa-solid fa-file-pdf mr-1"></i>결과 PDF 저장
+              </button>
               <button onclick="navigateQuest(1)" class="px-3.5 py-1.5 bg-teal-600 hover:bg-teal-700 text-white font-bold text-xs rounded-lg transition shadow-sm">
                 다음 퀘스트 도전 <i class="fa-solid fa-chevron-right ml-1"></i>
               </button>
@@ -268,6 +286,9 @@
     </section>
 
     <!-- VIEW 5: PRINTABLE A4 SUMMARY REPORT & CERTIFICATE -->
+    <!-- 차시 결과지 (인쇄 전용). printQuestResult() 가 채운다 -->
+    <div id="quest-print"></div>
+
     <div id="print-area" class="hidden p-8 bg-white text-slate-900">
       <div class="border-b-4 border-slate-900 pb-4 mb-6">
         <div class="flex justify-between items-center">
@@ -1628,6 +1649,42 @@
           setTimeout(finalizeStep3, 250);
         }
       }, 600);
+    }
+
+    /* 차시 결과지 PDF — 이름·차시·코드·파라미터·차트·터미널을 A4 한 장으로. 브라우저 인쇄창에서 'PDF로 저장' */
+    function printQuestResult() {
+      if (!activeQuest) return;
+      const esc = (t) => String(t ?? "").replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
+      const code = document.getElementById("code-output")?.innerText || "";
+      const params = (activeQuest.params || []).map((pr) => {
+        const el = document.getElementById(pr.id);
+        return `<tr><td>${esc(pr.label)}</td><td>${esc(el ? el.value : "")}</td></tr>`;
+      }).join("");
+      const canvas = document.querySelector("#chart-container canvas, canvas:not(#practiceCanvas)");
+      let chartImg = "";
+      try { if (canvas && canvas.width > 0) chartImg = canvas.toDataURL("image/png"); } catch (e) { chartImg = ""; }
+      const log = (document.getElementById("terminal-log")?.innerText || "").trim();
+      const now = new Date();
+      const stamp = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")} ${String(now.getHours()).padStart(2, "0")}:${String(now.getMinutes()).padStart(2, "0")}`;
+      const done = Object.values(studentProgress).filter(Boolean).length;
+      document.getElementById("quest-print").innerHTML = `
+        <h1>${activeQuest.id}차시 · ${esc(activeQuest.title)}</h1>
+        <div class="qp-meta">AICE 어소시에이트 실기 · B학교(해양마고) · 학생: <b>${esc(currentStudent || "게스트")}</b> · ${stamp} · 진도 ${done}/50</div>
+        <div class="qp-sec">핵심 함수</div>
+        <div style="font-family:'Courier New',monospace;font-size:12px;font-weight:700">${esc(activeQuest.funcA)} &nbsp;·&nbsp; ${esc(activeQuest.funcB)}</div>
+        <div class="qp-sec">STEP 1 · 조립한 코드</div>
+        <pre>${esc(code)}</pre>
+        ${params ? `<div class="qp-sec">STEP 2 · 선택한 파라미터</div><table>${params}</table>` : ""}
+        <div class="qp-sec">STEP 3 · 결과 차트 — ${esc(activeQuest.chartTitle || "")}</div>
+        ${chartImg ? `<img src="${chartImg}" alt="결과 차트">` : "<div class='qp-log'>차트 없음</div>"}
+        <div class="qp-sec">실행 로그</div>
+        <div class="qp-log">${esc(log)}</div>
+        <div class="qp-foot"><span>${esc(activeQuest.briefRule || "")}</span><span>서명: ____________</span></div>`;
+      document.body.classList.add("printing-quest");
+      const cleanup = () => { document.body.classList.remove("printing-quest"); window.removeEventListener("afterprint", cleanup); };
+      window.addEventListener("afterprint", cleanup);
+      window.print();
+      setTimeout(cleanup, 60000);   // afterprint 가 안 오는 브라우저 대비
     }
 
     function finalizeStep3() {
