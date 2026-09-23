@@ -133,7 +133,7 @@ export function makeDeck(partNo, partTitle, partSub, sessions) {
       const x = 0.6 + i * 1.76;
       s.addShape("roundRect", { x, y: 3.4, w: 1.6, h: 1.1, fill: { color: "312E81" }, line: { color: "4338CA" }, rectRadius: 0.1 });
       T(s, `${se.no}차시`, { x: x + 0.12, y: 3.48, w: 1.4, h: 0.3, fontSize: 11, bold: true, color: "A5B4FC" });
-      T(s, `${se.funcs[0]}\n${se.funcs[1]}`, { x: x + 0.12, y: 3.78, w: 1.4, h: 0.68, fontSize: 12, bold: true, color: C.white, fontFace: MONO, valign: "top" });
+      T(s, `${se.funcs[0]}\n${se.funcs[1]}`, { x: x + 0.12, y: 3.76, w: 1.42, h: 0.72, fontSize: Math.max(7.5, Math.min(11, 150 / Math.max(se.funcs[0].length, se.funcs[1].length))), bold: true, color: C.white, fontFace: MONO, valign: "top", lineSpacingMultiple: 1.05 });
     });
     T(s, "흥해공고 · 강사 정지원", { x: 0.6, y: 4.9, w: 8.8, h: 0.3, fontSize: 11, color: "818CF8" });
   });
